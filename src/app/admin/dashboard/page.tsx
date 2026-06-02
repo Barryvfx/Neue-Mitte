@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { LogOut, Users, LayoutDashboard, Loader2 } from 'lucide-react'
+import { LogOut, Users, LayoutDashboard, Loader2, Newspaper } from 'lucide-react'
 import StatsCards from '@/components/admin/StatsCards'
 import Charts from '@/components/admin/Charts'
 import ThemeToggle from '@/components/ui/ThemeToggle'
@@ -63,6 +63,13 @@ export default function AdminDashboard() {
                 >
                   <Users className="h-4 w-4" />
                   Unterstützer
+                </Link>
+                <Link
+                  href="/admin/news"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                >
+                  <Newspaper className="h-4 w-4" />
+                  Meldungen
                 </Link>
               </nav>
             </div>

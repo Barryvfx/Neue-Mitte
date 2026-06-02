@@ -18,7 +18,7 @@ export async function GET() {
     `"${s.firstName.replace(/"/g, '""')}"`,
     `"${s.lastName.replace(/"/g, '""')}"`,
     `"${s.email.replace(/"/g, '""')}"`,
-    `"${s.city.replace(/"/g, '""')}"`,
+    `"${(s.city ?? '').replace(/"/g, '""')}"`,
     s.createdAt.toISOString(),
   ])
 

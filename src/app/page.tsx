@@ -1,41 +1,57 @@
 import { prisma } from '@/lib/db'
-import Hero from '@/components/sections/Hero'
-import Mission from '@/components/sections/Mission'
-import Programm from '@/components/sections/Programm'
-import Themen from '@/components/sections/Themen'
-import Goals from '@/components/sections/Goals'
-import Unterstuetzen from '@/components/sections/Unterstuetzen'
-import Kontakt from '@/components/sections/Kontakt'
+import HeroSection from '@/components/sections/HeroSection'
+import SupporterBanner from '@/components/sections/SupporterBanner'
+import PrioritiesSection from '@/components/sections/PrioritiesSection'
+import NewsPreviewSection from '@/components/sections/NewsPreviewSection'
+import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
-async function getSupporterCount(): Promise<number> {
-  try {
-    return await prisma.supporter.count()
-  } catch {
-    return 0
-  }
+async function getSupporterCount() {
+  try { return await prisma.supporter.count() } catch { return 0 }
 }
 
 export default async function Home() {
-  const supporterCount = await getSupporterCount()
+  const count = await getSupporterCount()
 
   return (
     <>
-      <Hero supporterCount={supporterCount} />
-      <Mission />
-      <Programm />
-      <Themen />
-      <Goals count={supporterCount} />
-      <Unterstuetzen count={supporterCount} />
-      <Kontakt />
+      <HeroSection />
+      <SupporterBanner count={count} />
+      <PrioritiesSection />
+      <NewsPreviewSection />
 
-      {/* Legal notice */}
-      <div className="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 py-4">
-        <p className="text-center text-xs text-gray-500 dark:text-gray-500 max-w-3xl mx-auto px-4">
-          Die Neue Mitte ist ein privates Projekt zur Entwicklung politischer Ideen
-          und steht in keiner Verbindung zu bestehenden Parteien oder Organisationen.
-        </p>
+      {/* CTA section */}
+      <section className="nm-section-sm bg-nm-blue">
+        <div className="nm-container text-center">
+          <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-white/50 mb-3">
+            Gemeinsam für Deutschland
+          </p>
+          <h2 className="text-3xl sm:text-4xl font-black text-white mb-4 tracking-tight">
+            Deutschland kann mehr.
+          </h2>
+          <p className="text-white/70 mb-8 max-w-lg mx-auto leading-relaxed">
+            Unterstützen Sie die Neue Mitte und zeigen Sie: Es gibt eine politische Mitte in Deutschland,
+            die pragmatisch, lösungsorientiert und glaubwürdig ist.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/unterstuetzen" className="btn-outline-white text-base px-8 py-3.5">
+              Jetzt unterstützen
+            </Link>
+            <Link href="/programm" className="btn-primary bg-white text-nm-blue hover:bg-white/90 text-base px-8 py-3.5">
+              Programm lesen
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Legal note */}
+      <div className="bg-nm-gray border-t border-nm-line">
+        <div className="nm-container py-3">
+          <p className="text-center text-[11px] text-nm-muted">
+            Die Neue Mitte ist ein privates Projekt zur Entwicklung politischer Ideen und steht in keiner Verbindung zu bestehenden Parteien oder Organisationen.
+          </p>
+        </div>
       </div>
     </>
   )

@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  const { firstName, lastName, email, city, website } = result.data
+  const { firstName, lastName, email, city, message, website } = result.data
 
   // Honeypot check
   if (website && website.length > 0) {
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
 
   try {
     await prisma.supporter.create({
-      data: { firstName, lastName, email, city },
+      data: { firstName, lastName, email, city: city ?? null, message: message ?? null },
     })
     return NextResponse.json({ success: true }, { status: 201 })
   } catch (err: unknown) {

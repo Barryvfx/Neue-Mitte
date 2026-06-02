@@ -31,14 +31,14 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  const { name, email, message, website } = result.data
+  const { name, email, subject, message, website } = result.data
 
   if (website && website.length > 0) {
     return NextResponse.json({ success: true })
   }
 
   try {
-    await prisma.contactMessage.create({ data: { name, email, message } })
+    await prisma.contactMessage.create({ data: { name, email, subject, message } })
     return NextResponse.json({ success: true }, { status: 201 })
   } catch (err) {
     console.error('Contact message error:', err)
