@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
 import NewsAdminTable from '@/components/admin/NewsAdminTable'
+import AdminShell from '@/components/admin/AdminShell'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,23 +17,17 @@ export default async function AdminNewsPage() {
   })
 
   return (
-    <div className="min-h-screen bg-nm-gray">
-      <div className="bg-nm-blue text-white px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link href="/admin/dashboard" className="text-white/70 hover:text-white text-sm">
-            ← Dashboard
-          </Link>
-          <span className="text-white/30">|</span>
-          <h1 className="font-bold">Meldungen verwalten</h1>
+    <AdminShell active="news">
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-2xl font-black text-gray-900 dark:text-white">Meldungen</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Alle Meldungen verwalten</p>
         </div>
-        <Link href="/admin/news/new" className="bg-white text-nm-blue text-sm font-bold px-4 py-1.5 hover:bg-white/90 transition-colors">
+        <Link href="/admin/news/new" className="btn-primary">
           + Neue Meldung
         </Link>
       </div>
-
-      <div className="p-6 max-w-5xl mx-auto">
-        <NewsAdminTable articles={articles} />
-      </div>
-    </div>
+      <NewsAdminTable articles={articles} />
+    </AdminShell>
   )
 }

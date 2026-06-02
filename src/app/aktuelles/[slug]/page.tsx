@@ -12,7 +12,7 @@ interface Props {
 async function getArticle(slug: string) {
   try {
     return await prisma.newsArticle.findFirst({
-      where: { slug, published: true },
+      where: { slug, OR: [{ published: true }, { scheduledAt: { lte: new Date() } }] },
     })
   } catch {
     return null

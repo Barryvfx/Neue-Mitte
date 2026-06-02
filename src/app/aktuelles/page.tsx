@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic'
 async function getAllNews() {
   try {
     return await prisma.newsArticle.findMany({
-      where: { published: true },
+      where: { OR: [{ published: true }, { scheduledAt: { lte: new Date() } }] },
       orderBy: { publishedAt: 'desc' },
       select: { id: true, title: true, slug: true, excerpt: true, publishedAt: true },
     })

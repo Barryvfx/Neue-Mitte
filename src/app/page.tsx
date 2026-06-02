@@ -11,11 +11,30 @@ async function getSupporterCount() {
   try { return await prisma.supporter.count() } catch { return 0 }
 }
 
+async function getBanner() {
+  try {
+    const [active, text] = await Promise.all([
+      prisma.contentBlock.findUnique({ where: { key: 'banner_active' } }),
+      prisma.contentBlock.findUnique({ where: { key: 'banner_text' } }),
+    ])
+    if (active?.value === 'true' && text?.value) return text.value
+    return null
+  } catch { return null }
+}
+
 export default async function Home() {
-  const count = await getSupporterCount()
+  const [count, banner] = await Promise.all([getSupporterCount(), getBanner()])
 
   return (
     <>
+      {banner && (
+        <div className="bg-nm-blue border-b border-white/20">
+          <div className="nm-container py-2.5 text-center">
+            <p className="text-white text-sm font-medium">{banner}</p>
+          </div>
+        </div>
+      )}
+
       <HeroSection />
       <SupporterBanner count={count} />
       <PrioritiesSection />

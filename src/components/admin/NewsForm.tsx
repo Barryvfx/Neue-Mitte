@@ -9,10 +9,11 @@ interface NewsFormData {
   excerpt: string
   content: string
   published: boolean
+  scheduledAt: string
 }
 
 interface Props {
-  initialData?: NewsFormData & { id: string }
+  initialData?: Omit<NewsFormData, 'scheduledAt'> & { id: string; scheduledAt?: string | null }
   mode: 'create' | 'edit'
 }
 
@@ -36,10 +37,12 @@ export default function NewsForm({ initialData, mode }: Props) {
     excerpt: initialData?.excerpt ?? '',
     content: initialData?.content ?? '',
     published: initialData?.published ?? false,
+    scheduledAt: initialData?.scheduledAt ?? '',
   })
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
   const [slugManual, setSlugManual] = useState(mode === 'edit')
+  const [preview, setPreview] = useState(false)
 
   function handleTitleChange(value: string) {
     setForm((prev) => ({
@@ -57,9 +60,11 @@ export default function NewsForm({ initialData, mode }: Props) {
   async function handleSave(published: boolean) {
     setError('')
     setSaving(true)
-
-    const payload = { ...form, published }
-
+    const payload = {
+      ...form,
+      published,
+      scheduledAt: form.scheduledAt || null,
+    }
     try {
       const res = await fetch(
         mode === 'edit' ? `/api/admin/news/${initialData!.id}` : '/api/admin/news',
@@ -81,6 +86,31 @@ export default function NewsForm({ initialData, mode }: Props) {
     }
   }
 
+  if (preview) {
+    return (
+      <div>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="font-bold text-nm-blue">Vorschau</h2>
+          <button onClick={() => setPreview(false)} className="btn-ghost text-sm">
+            ← Zurück zum Bearbeiten
+          </button>
+        </div>
+        <div className="border border-nm-line p-8 bg-white">
+          <p className="text-xs text-nm-muted uppercase tracking-widest mb-4">Vorschau — nicht veröffentlicht</p>
+          <h1 className="text-3xl font-black text-nm-blue mb-4">{form.title || 'Kein Titel'}</h1>
+          <p className="text-nm-muted text-lg leading-relaxed font-medium border-l-4 border-nm-blue pl-5 mb-8">
+            {form.excerpt || 'Kein Kurztext'}
+          </p>
+          <div className="text-nm-muted leading-relaxed space-y-4">
+            {form.content.split('\n\n').map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-5">
       <div>
@@ -95,7 +125,7 @@ export default function NewsForm({ initialData, mode }: Props) {
 
       <div>
         <label className="nm-label">URL-Slug *</label>
-        <div className="flex items-center gap-0">
+        <div className="flex items-center">
           <span className="bg-nm-gray border border-nm-line border-r-0 px-3 py-2 text-xs text-nm-muted font-mono">
             /aktuelles/
           </span>
@@ -106,7 +136,7 @@ export default function NewsForm({ initialData, mode }: Props) {
             placeholder="mein-artikel-titel"
           />
         </div>
-        <p className="text-xs text-nm-muted/60 mt-1">Wird automatisch aus dem Titel generiert. Nur Kleinbuchstaben, Zahlen und Bindestriche.</p>
+        <p className="text-xs text-nm-muted/60 mt-1">Wird automatisch aus dem Titel generiert.</p>
       </div>
 
       <div>
@@ -129,7 +159,19 @@ export default function NewsForm({ initialData, mode }: Props) {
           className="nm-input font-mono text-sm"
           placeholder="Vollständiger Artikeltext. Absätze durch Leerzeile trennen."
         />
-        <p className="text-xs text-nm-muted/60 mt-1">Absätze werden automatisch erkannt. Leerzeilen zwischen Absätzen lassen.</p>
+      </div>
+
+      <div>
+        <label className="nm-label">Geplante Veröffentlichung (optional)</label>
+        <input
+          type="datetime-local"
+          value={form.scheduledAt}
+          onChange={(e) => setForm((p) => ({ ...p, scheduledAt: e.target.value }))}
+          className="nm-input"
+        />
+        <p className="text-xs text-nm-muted/60 mt-1">
+          Leer lassen für sofortige Veröffentlichung. Wird automatisch freigeschaltet zum gewählten Zeitpunkt.
+        </p>
       </div>
 
       {error && (
@@ -138,26 +180,17 @@ export default function NewsForm({ initialData, mode }: Props) {
         </div>
       )}
 
-      <div className="flex items-center gap-3 pt-2">
-        <button
-          onClick={() => handleSave(true)}
-          disabled={saving}
-          className="btn-primary"
-        >
-          {saving ? 'Speichert…' : 'Veröffentlichen'}
+      <div className="flex flex-wrap items-center gap-3 pt-2">
+        <button onClick={() => handleSave(true)} disabled={saving} className="btn-primary">
+          {saving ? 'Speichert…' : form.scheduledAt ? 'Einplanen' : 'Veröffentlichen'}
         </button>
-        <button
-          onClick={() => handleSave(false)}
-          disabled={saving}
-          className="btn-outline"
-        >
+        <button onClick={() => handleSave(false)} disabled={saving} className="btn-outline">
           Als Entwurf speichern
         </button>
-        <button
-          onClick={() => router.back()}
-          className="btn-ghost ml-auto"
-          type="button"
-        >
+        <button onClick={() => setPreview(true)} className="btn-ghost" type="button">
+          Vorschau
+        </button>
+        <button onClick={() => router.back()} className="btn-ghost ml-auto" type="button">
           Abbrechen
         </button>
       </div>

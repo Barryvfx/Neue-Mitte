@@ -5,7 +5,7 @@ import NewsCard from '@/components/news/NewsCard'
 async function getLatestNews() {
   try {
     return await prisma.newsArticle.findMany({
-      where: { published: true },
+      where: { OR: [{ published: true }, { scheduledAt: { lte: new Date() } }] },
       orderBy: { publishedAt: 'desc' },
       take: 3,
       select: { id: true, title: true, slug: true, excerpt: true, publishedAt: true },

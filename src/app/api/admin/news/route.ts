@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json()
-    const { title, slug, excerpt, content, published } = body
+    const { title, slug, excerpt, content, published, scheduledAt } = body
 
     if (!title || !slug || !excerpt || !content) {
       return NextResponse.json({ error: 'Pflichtfelder fehlen' }, { status: 400 })
@@ -47,6 +47,7 @@ export async function POST(req: NextRequest) {
         content: content.trim(),
         published: Boolean(published),
         publishedAt: published ? new Date() : null,
+        scheduledAt: scheduledAt ? new Date(scheduledAt) : null,
       },
     })
     return NextResponse.json(article, { status: 201 })
