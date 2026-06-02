@@ -7,7 +7,7 @@ import Goals from '@/components/sections/Goals'
 import Unterstuetzen from '@/components/sections/Unterstuetzen'
 import Kontakt from '@/components/sections/Kontakt'
 
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 async function getSupporterCount(): Promise<number> {
   try {
