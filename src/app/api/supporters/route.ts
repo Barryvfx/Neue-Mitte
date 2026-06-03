@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  const { firstName, lastName, email, city, message, website } = result.data
+  const { firstName, lastName, email, city, message, website, showInTicker, tickerName } = result.data
 
   if (website && website.length > 0) {
     return NextResponse.json({ success: true })
@@ -79,7 +79,13 @@ export async function POST(req: NextRequest) {
   try {
     await prisma.$transaction([
       prisma.supporter.create({
-        data: { firstName, lastName, email, city: city ?? null, message: message ?? null },
+        data: {
+          firstName, lastName, email,
+          city: city ?? null,
+          message: message ?? null,
+          showInTicker: showInTicker ?? false,
+          tickerName: (showInTicker && tickerName?.trim()) ? tickerName.trim() : null,
+        },
       }),
       prisma.supporterToken.update({
         where: { token: sessionToken },

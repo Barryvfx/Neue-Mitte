@@ -8,14 +8,16 @@ datasource db {
 }
 
 model Supporter {
-  id        String   @id @default(cuid())
-  firstName String
-  lastName  String
-  email     String   @unique
-  city      String?
-  message   String?
-  notes     String?
-  createdAt DateTime @default(now())
+  id           String   @id @default(cuid())
+  firstName    String
+  lastName     String
+  email        String   @unique
+  city         String?
+  message      String?
+  notes        String?
+  showInTicker Boolean  @default(false)
+  tickerName   String?
+  createdAt    DateTime @default(now())
 
   @@index([email])
   @@index([createdAt])
@@ -84,16 +86,50 @@ model FAQ {
 }
 
 model Event {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  location    String   @default("")
-  date        DateTime
-  active      Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String              @id @default(cuid())
+  title         String
+  description   String
+  location      String              @default("")
+  date          DateTime
+  active        Boolean             @default(true)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  registrations EventRegistration[]
 
   @@map("events")
+}
+
+model EventRegistration {
+  id        String   @id @default(cuid())
+  eventId   String
+  name      String
+  email     String
+  createdAt DateTime @default(now())
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, email])
+  @@index([eventId])
+  @@map("event_registrations")
+}
+
+model Poll {
+  id        String       @id @default(cuid())
+  question  String
+  active    Boolean      @default(true)
+  createdAt DateTime     @default(now())
+  options   PollOption[]
+
+  @@map("polls")
+}
+
+model PollOption {
+  id     String @id @default(cuid())
+  pollId String
+  text   String
+  votes  Int    @default(0)
+  poll   Poll   @relation(fields: [pollId], references: [id], onDelete: Cascade)
+
+  @@map("poll_options")
 }
 
 model NewsletterSubscriber {

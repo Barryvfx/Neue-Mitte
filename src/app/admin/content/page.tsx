@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Loader2, CheckCircle, XCircle, AlertTriangle } from 'lucide-react'
+import { Loader2, CheckCircle, XCircle, AlertTriangle, Plus, Trash2, ToggleLeft, ToggleRight } from 'lucide-react'
 import AdminShell from '@/components/admin/AdminShell'
 import Button from '@/components/ui/Button'
 
@@ -72,6 +72,137 @@ function Toggle({
         />
       </div>
     </button>
+  )
+}
+
+interface PollOption { id: string; text: string; votes: number }
+interface Poll { id: string; question: string; active: boolean; options: PollOption[] }
+
+function PollsSection() {
+  const [polls, setPolls] = useState<Poll[]>([])
+  const [loading, setLoading] = useState(true)
+  const [question, setQuestion] = useState('')
+  const [optionTexts, setOptionTexts] = useState(['', '', ''])
+  const [creating, setCreating] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/admin/polls').then((r) => r.json()).then((d) => { if (Array.isArray(d)) setPolls(d) }).finally(() => setLoading(false))
+  }, [])
+
+  async function createPoll() {
+    const opts = optionTexts.filter((o) => o.trim())
+    if (!question.trim() || opts.length < 2) return
+    setCreating(true)
+    const res = await fetch('/api/admin/polls', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: question.trim(), options: opts }),
+    })
+    const data = await res.json()
+    if (res.ok) { setPolls((p) => [data, ...p]); setQuestion(''); setOptionTexts(['', '', '']) }
+    setCreating(false)
+  }
+
+  async function toggleActive(poll: Poll) {
+    const res = await fetch(`/api/admin/polls/${poll.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ active: !poll.active }),
+    })
+    if (res.ok) setPolls((p) => p.map((x) => x.id === poll.id ? { ...x, active: !x.active } : x))
+  }
+
+  async function deletePoll(id: string) {
+    if (!confirm('Umfrage wirklich löschen?')) return
+    const res = await fetch(`/api/admin/polls/${id}`, { method: 'DELETE' })
+    if (res.ok) setPolls((p) => p.filter((x) => x.id !== id))
+  }
+
+  return (
+    <section className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-6 shadow-sm">
+      <h2 className="text-base font-bold text-gray-900 dark:text-white mb-1">Abstimmungen</h2>
+      <p className="text-xs text-gray-500 dark:text-gray-400 mb-5">Nur die aktive Umfrage wird auf der Website angezeigt</p>
+
+      {/* Create form */}
+      <div className="space-y-3 mb-6 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl">
+        <input
+          type="text"
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
+          placeholder="Frage eingeben…"
+          className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-nm-blue/30 focus:border-nm-blue transition-colors"
+        />
+        {optionTexts.map((opt, i) => (
+          <input
+            key={i}
+            type="text"
+            value={opt}
+            onChange={(e) => setOptionTexts((prev) => prev.map((o, j) => j === i ? e.target.value : o))}
+            placeholder={`Option ${i + 1}…`}
+            className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-nm-blue/30 focus:border-nm-blue transition-colors"
+          />
+        ))}
+        <div className="flex gap-2">
+          <Button size="sm" loading={creating} onClick={createPoll}>
+            <Plus className="w-3.5 h-3.5 mr-1" />
+            Erstellen
+          </Button>
+          <button
+            onClick={() => setOptionTexts((p) => [...p, ''])}
+            className="text-xs text-gray-400 hover:text-nm-blue transition-colors"
+          >
+            + Option hinzufügen
+          </button>
+        </div>
+      </div>
+
+      {/* Poll list */}
+      {loading ? (
+        <div className="flex justify-center py-6"><Loader2 className="w-5 h-5 animate-spin text-gray-400" /></div>
+      ) : polls.length === 0 ? (
+        <p className="text-sm text-gray-400 text-center py-4">Noch keine Umfragen.</p>
+      ) : (
+        <div className="space-y-3">
+          {polls.map((poll) => {
+            const total = poll.options.reduce((s, o) => s + o.votes, 0)
+            return (
+              <div key={poll.id} className="border border-gray-100 dark:border-gray-700 rounded-xl p-4">
+                <div className="flex items-start justify-between gap-3 mb-3">
+                  <div className="flex-1">
+                    <p className="font-semibold text-sm text-gray-900 dark:text-white">{poll.question}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{total} Stimmen</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => toggleActive(poll)} title={poll.active ? 'Deaktivieren' : 'Aktivieren'}>
+                      {poll.active
+                        ? <ToggleRight className="w-5 h-5 text-nm-blue" />
+                        : <ToggleLeft className="w-5 h-5 text-gray-400" />}
+                    </button>
+                    <button onClick={() => deletePoll(poll.id)} className="text-gray-300 hover:text-red-500 transition-colors">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  {poll.options.map((opt) => {
+                    const pct = total > 0 ? Math.round((opt.votes / total) * 100) : 0
+                    return (
+                      <div key={opt.id} className="flex items-center gap-2 text-xs">
+                        <span className="w-32 truncate text-gray-600 dark:text-gray-400">{opt.text}</span>
+                        <div className="flex-1 h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                          <div className="h-full bg-nm-blue rounded-full" style={{ width: `${pct}%` }} />
+                        </div>
+                        <span className="w-8 text-right text-gray-400">{pct}%</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </section>
   )
 }
 
@@ -302,6 +433,7 @@ export default function AdminContentPage() {
             </div>
           )}
         </section>
+        <PollsSection />
       </div>
     </AdminShell>
   )

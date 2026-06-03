@@ -6,6 +6,10 @@ import NewsPreviewSection from '@/components/sections/NewsPreviewSection'
 import Link from 'next/link'
 import NewsletterSection from '@/components/sections/NewsletterSection'
 import EventsPreviewSection from '@/components/sections/EventsPreviewSection'
+import SupporterTicker from '@/components/sections/SupporterTicker'
+import PollWidget from '@/components/sections/PollWidget'
+import QuoteShare from '@/components/sections/QuoteShare'
+import ProgramQuiz from '@/components/sections/ProgramQuiz'
 
 export const dynamic = 'force-dynamic'
 
@@ -39,9 +43,30 @@ export default async function Home() {
 
       <HeroSection />
       <SupporterBanner count={count} />
+
+      {/* Live ticker */}
+      <div className="nm-container py-4">
+        <SupporterTicker />
+      </div>
+
       <PrioritiesSection />
       <NewsPreviewSection />
       <EventsPreviewSection />
+
+      {/* Interactive section: Quiz + Poll + Quote */}
+      <section className="nm-section bg-nm-gray border-t border-nm-line">
+        <div className="nm-container">
+          <div className="mb-8">
+            <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-nm-blue mb-2">Mitmachen</p>
+            <h2 className="text-2xl sm:text-3xl font-black text-nm-blue tracking-tight">Ihre Meinung zählt</h2>
+          </div>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <ProgramQuiz />
+            <PollWidget />
+            <QuoteShare />
+          </div>
+        </div>
+      </section>
 
       <NewsletterSection />
 

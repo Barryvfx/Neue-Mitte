@@ -20,6 +20,8 @@ export const supporterSchema = z.object({
   consent: z.boolean().optional(),
   message: z.string().max(500).optional(),
   website: z.string().max(0, 'Spam erkannt').optional(),
+  showInTicker: z.boolean().optional(),
+  tickerName: z.string().max(100).optional(),
 })
 
 export const contactSchema = z.object({

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { PROGRAM_AREAS } from '@/lib/programData'
 import type { Metadata } from 'next'
+import ProgramQuiz from '@/components/sections/ProgramQuiz'
 
 export const metadata: Metadata = {
   title: 'Programm – Neue Mitte',
@@ -60,6 +61,15 @@ export default function ProgrammPage() {
               </span>
             </Link>
           ))}
+        </div>
+      </div>
+
+      {/* Quiz */}
+      <div className="border-t border-nm-line bg-nm-gray">
+        <div className="nm-container py-16">
+          <div className="max-w-md mx-auto">
+            <ProgramQuiz />
+          </div>
         </div>
       </div>
 
