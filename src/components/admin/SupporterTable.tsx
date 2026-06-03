@@ -3,9 +3,10 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
   Search, Download, Trash2, ChevronLeft, ChevronRight,
-  ChevronUp, ChevronDown, ChevronsUpDown, Loader2,
+  ChevronUp, ChevronDown, ChevronsUpDown, Loader2, Pencil,
 } from 'lucide-react'
 import Button from '@/components/ui/Button'
+import SupporterEditModal from '@/components/admin/SupporterEditModal'
 
 interface Supporter {
   id: string
@@ -13,6 +14,7 @@ interface Supporter {
   lastName: string
   email: string
   city: string
+  notes: string
   createdAt: string
 }
 
@@ -42,6 +44,11 @@ export default function SupporterTable() {
   const [order, setOrder] = useState<'asc' | 'desc'>('desc')
   const [deleting, setDeleting] = useState<string | null>(null)
   const [exporting, setExporting] = useState(false)
+  const [editingSupporter, setEditingSupporter] = useState<Supporter | null>(null)
+  const [dateFrom, setDateFrom] = useState('')
+  const [dateTo, setDateTo] = useState('')
+  const [cityFilter, setCityFilter] = useState('')
+  const [debouncedCity, setDebouncedCity] = useState('')
 
   useEffect(() => {
     const t = setTimeout(() => {
@@ -50,6 +57,14 @@ export default function SupporterTable() {
     }, 400)
     return () => clearTimeout(t)
   }, [search])
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setDebouncedCity(cityFilter)
+      setPage(1)
+    }, 400)
+    return () => clearTimeout(t)
+  }, [cityFilter])
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -60,6 +75,9 @@ export default function SupporterTable() {
         sort,
         order,
         ...(debouncedSearch && { q: debouncedSearch }),
+        ...(debouncedCity && { city: debouncedCity }),
+        ...(dateFrom && { from: dateFrom }),
+        ...(dateTo && { to: dateTo }),
       })
       const res = await fetch(`/api/admin/supporters?${params}`)
       const json = await res.json()
@@ -69,7 +87,7 @@ export default function SupporterTable() {
     } finally {
       setLoading(false)
     }
-  }, [page, sort, order, debouncedSearch])
+  }, [page, sort, order, debouncedSearch, debouncedCity, dateFrom, dateTo])
 
   useEffect(() => { fetchData() }, [fetchData])
 
@@ -110,6 +128,16 @@ export default function SupporterTable() {
     }
   }
 
+  const handleSave = (updated: Supporter) => {
+    setData((prev) => {
+      if (!prev) return prev
+      return {
+        ...prev,
+        supporters: prev.supporters.map((s) => (s.id === updated.id ? { ...s, ...updated } : s)),
+      }
+    })
+  }
+
   const COLS: { label: string; field: SortField }[] = [
     { label: 'Vorname', field: 'firstName' },
     { label: 'Nachname', field: 'lastName' },
@@ -144,6 +172,37 @@ export default function SupporterTable() {
         </Button>
       </div>
 
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+        <div className="flex items-center gap-2">
+          <label className="text-xs font-semibold text-gray-600 dark:text-gray-400 whitespace-nowrap">Von</label>
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => { setDateFrom(e.target.value); setPage(1) }}
+            className="h-9 px-3 text-sm border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-nm-blue/30 transition-colors"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <label className="text-xs font-semibold text-gray-600 dark:text-gray-400 whitespace-nowrap">Bis</label>
+          <input
+            type="date"
+            value={dateTo}
+            onChange={(e) => { setDateTo(e.target.value); setPage(1) }}
+            className="h-9 px-3 text-sm border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-nm-blue/30 transition-colors"
+          />
+        </div>
+        <div className="relative flex-1 max-w-xs">
+          <input
+            type="search"
+            placeholder="Wohnort filtern…"
+            value={cityFilter}
+            onChange={(e) => setCityFilter(e.target.value)}
+            className="w-full h-9 px-3 text-sm border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-nm-blue/30 transition-colors"
+          />
+        </div>
+      </div>
+
       {/* Table */}
       <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl overflow-hidden shadow-card">
         <div className="overflow-x-auto">
@@ -162,19 +221,20 @@ export default function SupporterTable() {
                     </span>
                   </th>
                 ))}
-                <th className="w-16 px-4 py-3" />
+                <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Notizen</th>
+                <th className="w-24 px-4 py-3" />
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-16">
+                  <td colSpan={7} className="text-center py-16">
                     <Loader2 className="h-6 w-6 animate-spin text-nm-sky mx-auto" />
                   </td>
                 </tr>
               ) : !data?.supporters.length ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-16 text-gray-500">
+                  <td colSpan={7} className="text-center py-16 text-gray-500">
                     {debouncedSearch ? 'Keine Ergebnisse gefunden.' : 'Noch keine Unterstützer.'}
                   </td>
                 </tr>
@@ -193,17 +253,31 @@ export default function SupporterTable() {
                         day: '2-digit', month: '2-digit', year: 'numeric'
                       })}
                     </td>
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 max-w-[180px]">
+                      {s.notes
+                        ? <span title={s.notes} className="truncate block">{s.notes.length > 50 ? s.notes.slice(0, 50) + '…' : s.notes}</span>
+                        : <span className="text-gray-300 dark:text-gray-600">—</span>}
+                    </td>
                     <td className="px-4 py-3">
-                      <button
-                        onClick={() => handleDelete(s.id, `${s.firstName} ${s.lastName}`)}
-                        disabled={deleting === s.id}
-                        className="p-1.5 text-gray-400 hover:text-red-600 dark:hover:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors disabled:opacity-50"
-                        title="Löschen"
-                      >
-                        {deleting === s.id
-                          ? <Loader2 className="h-4 w-4 animate-spin" />
-                          : <Trash2 className="h-4 w-4" />}
-                      </button>
+                      <div className="flex items-center gap-1 justify-end">
+                        <button
+                          onClick={() => setEditingSupporter(s)}
+                          className="p-1.5 text-gray-400 hover:text-nm-blue dark:hover:text-blue-400 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-colors"
+                          title="Bearbeiten"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(s.id, `${s.firstName} ${s.lastName}`)}
+                          disabled={deleting === s.id}
+                          className="p-1.5 text-gray-400 hover:text-red-600 dark:hover:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors disabled:opacity-50"
+                          title="Löschen"
+                        >
+                          {deleting === s.id
+                            ? <Loader2 className="h-4 w-4 animate-spin" />
+                            : <Trash2 className="h-4 w-4" />}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -247,6 +321,14 @@ export default function SupporterTable() {
         <p className="text-xs text-gray-500 mt-3">
           {data.total.toLocaleString('de-DE')} Unterstützer{debouncedSearch ? ' (gefiltert)' : ' gesamt'}
         </p>
+      )}
+
+      {editingSupporter && (
+        <SupporterEditModal
+          supporter={editingSupporter}
+          onClose={() => setEditingSupporter(null)}
+          onSave={handleSave}
+        />
       )}
     </div>
   )

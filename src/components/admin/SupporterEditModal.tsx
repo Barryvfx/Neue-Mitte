@@ -11,6 +11,7 @@ interface Supporter {
   email: string
   city: string
   notes: string
+  createdAt: string
 }
 
 interface Props {

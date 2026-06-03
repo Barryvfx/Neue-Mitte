@@ -25,6 +25,7 @@ function formatDate(d: Date | null) {
 export default function NewsAdminTable({ articles: initial }: Props) {
   const [articles, setArticles] = useState(initial)
   const [deleting, setDeleting] = useState<string | null>(null)
+  const [duplicating, setDuplicating] = useState<string | null>(null)
   const router = useRouter()
 
   async function handleDelete(id: string, title: string) {
@@ -38,6 +39,26 @@ export default function NewsAdminTable({ articles: initial }: Props) {
       }
     } finally {
       setDeleting(null)
+    }
+  }
+
+  async function handleDuplicate(article: Article) {
+    setDuplicating(article.id)
+    try {
+      const res = await fetch('/api/admin/news', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: `Kopie: ${article.title}`,
+          slug: `${article.slug}-kopie`,
+          published: false,
+        }),
+      })
+      if (res.ok) {
+        router.refresh()
+      }
+    } finally {
+      setDuplicating(null)
     }
   }
 
@@ -99,6 +120,13 @@ export default function NewsAdminTable({ articles: initial }: Props) {
                   >
                     Bearbeiten
                   </Link>
+                  <button
+                    onClick={() => handleDuplicate(a)}
+                    disabled={duplicating === a.id}
+                    className="text-xs font-semibold text-gray-600 hover:underline disabled:opacity-50"
+                  >
+                    {duplicating === a.id ? '…' : 'Duplizieren'}
+                  </button>
                   <button
                     onClick={() => handleDelete(a.id, a.title)}
                     disabled={deleting === a.id}
