@@ -7,6 +7,7 @@ import AdminShell from '@/components/admin/AdminShell'
 import StatsCards from '@/components/admin/StatsCards'
 import Charts from '@/components/admin/Charts'
 import CityChart from '@/components/admin/CityChart'
+import GermanyMap from '@/components/admin/GermanyMap'
 
 interface Stats {
   total: number
@@ -14,7 +15,7 @@ interface Stats {
   thisWeek: number
   thisMonth: number
   chartData: Array<{ date: string; count: number }>
-  cityStats: Array<{ city: string | null; _count: { id: number } }>
+  cityStats: Array<{ city: string; count: number }>
 }
 
 interface RecentSupporter {
@@ -68,7 +69,12 @@ export default function AdminDashboard() {
         <div className="space-y-6">
           <StatsCards stats={stats} />
           <Charts data={stats.chartData} />
-          <CityChart data={stats.cityStats ?? []} />
+
+          {/* Two-column: bar chart + Germany map */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <CityChart data={stats.cityStats ?? []} />
+            <GermanyMap data={stats.cityStats ?? []} />
+          </div>
 
           {/* Letzte Anmeldungen */}
           <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-6 shadow-card">

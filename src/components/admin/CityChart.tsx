@@ -12,15 +12,14 @@ import {
 } from 'recharts'
 
 interface CityChartProps {
-  data: Array<{ city: string | null; _count: { id: number } }>
+  data: Array<{ city: string; count: number }>
 }
 
 export default function CityChart({ data }: CityChartProps) {
   const filtered = data
-    .filter((d) => d.city !== null && d.city.trim() !== '')
-    .sort((a, b) => b._count.id - a._count.id)
+    .filter((d) => d.city && d.city.trim() !== '')
+    .sort((a, b) => b.count - a.count)
     .slice(0, 15)
-    .map((d) => ({ city: d.city as string, count: d._count.id }))
 
   return (
     <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-6 shadow-card">

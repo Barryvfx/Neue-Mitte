@@ -71,7 +71,28 @@ export default function Datenschutz() {
                     </p>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-1">c) Server-Logs</h3>
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-1">c) Admin-Bereich – Login-Protokoll</h3>
+                    <p className="leading-relaxed">
+                      Jeder Anmeldeversuch im Admin-Bereich dieser Website (einschließlich fehlgeschlagener Versuche)
+                      wird zum Zweck der Sicherheit protokolliert. Dabei werden folgende Daten gespeichert:
+                    </p>
+                    <ul className="mt-2 space-y-1 list-disc list-inside text-gray-500 dark:text-gray-400">
+                      <li>IP-Adresse des Anfragenden</li>
+                      <li>Verwendete E-Mail-Adresse</li>
+                      <li>Datum und Uhrzeit des Versuchs</li>
+                      <li>Erfolg oder Misserfolg der Anmeldung</li>
+                    </ul>
+                    <p className="mt-2 leading-relaxed">
+                      <strong className="text-gray-800 dark:text-gray-200">Zweck:</strong> Erkennung
+                      und Abwehr von unbefugten Zugriffsversuchen und Brute-Force-Angriffen.{' '}
+                      <strong className="text-gray-800 dark:text-gray-200">Rechtsgrundlage:</strong>{' '}
+                      Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der Sicherheit der
+                      Verarbeitungssysteme). Diese Daten sind ausschließlich für autorisierte Administratoren
+                      einsehbar und werden nach 90 Tagen gelöscht.
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-1">d) Server-Logs</h3>
                     <p className="leading-relaxed">
                       Beim Besuch der Website werden automatisch technische Daten übertragen
                       (IP-Adresse, Browsertyp, Datum/Uhrzeit). Diese werden für maximal 7 Tage
