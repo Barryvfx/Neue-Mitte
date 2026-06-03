@@ -10,11 +10,12 @@ import SupporterTicker from '@/components/sections/SupporterTicker'
 import PollWidget from '@/components/sections/PollWidget'
 import QuoteShare from '@/components/sections/QuoteShare'
 import ProgramQuiz from '@/components/sections/ProgramQuiz'
+import CountdownTimer from '@/components/sections/CountdownTimer'
 
 export const dynamic = 'force-dynamic'
 
 async function getSupporterCount() {
-  try { return await prisma.supporter.count() } catch { return 0 }
+  try { return await prisma.supporter.count({ where: { confirmed: true } }) } catch { return 0 }
 }
 
 async function getBanner() {
@@ -44,9 +45,12 @@ export default async function Home() {
       <HeroSection />
       <SupporterBanner count={count} />
 
-      {/* Live ticker */}
+      {/* Live ticker + countdown */}
       <div className="nm-container py-4">
-        <SupporterTicker />
+        <div className="grid sm:grid-cols-2 gap-4">
+          <SupporterTicker />
+          <CountdownTimer />
+        </div>
       </div>
 
       <PrioritiesSection />

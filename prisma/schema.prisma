@@ -8,19 +8,23 @@ datasource db {
 }
 
 model Supporter {
-  id           String   @id @default(cuid())
-  firstName    String
-  lastName     String
-  email        String   @unique
-  city         String?
-  message      String?
-  notes        String?
-  showInTicker Boolean  @default(false)
-  tickerName   String?
-  createdAt    DateTime @default(now())
+  id            String   @id @default(cuid())
+  firstName     String
+  lastName      String
+  email         String   @unique
+  city          String?
+  message       String?
+  notes         String?
+  showInTicker  Boolean  @default(false)
+  tickerName    String?
+  confirmed     Boolean  @default(true)
+  confirmToken  String?
+  referralToken String?
+  createdAt     DateTime @default(now())
 
   @@index([email])
   @@index([createdAt])
+  @@index([confirmToken])
   @@map("supporters")
 }
 
@@ -138,6 +142,64 @@ model NewsletterSubscriber {
   createdAt DateTime @default(now())
 
   @@map("newsletter_subscribers")
+}
+
+model NewsletterSent {
+  id             String   @id @default(cuid())
+  subject        String
+  previewText    String?
+  html           String
+  recipientCount Int      @default(0)
+  createdAt      DateTime @default(now())
+
+  @@map("newsletter_sent")
+}
+
+model PressRelease {
+  id        String   @id @default(cuid())
+  title     String
+  excerpt   String
+  fileUrl   String?
+  published Boolean  @default(false)
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([published, date])
+  @@map("press_releases")
+}
+
+model PetitionSignature {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  city      String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@map("petition_signatures")
+}
+
+model ReferralLink {
+  id          String   @id @default(cuid())
+  token       String   @unique
+  label       String
+  clicks      Int      @default(0)
+  conversions Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  @@index([token])
+  @@map("referral_links")
+}
+
+model AbTestClick {
+  id        String   @id @default(cuid())
+  variant   String
+  action    String   @default("cta_click")
+  createdAt DateTime @default(now())
+
+  @@index([variant, action])
+  @@map("ab_test_clicks")
 }
 
 model SupporterToken {

@@ -17,23 +17,26 @@ export async function GET() {
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 29)
   thirtyDaysAgo.setHours(0, 0, 0, 0)
 
-  const [total, today, thisWeek, thisMonth, rawChart, rawCityStats, newsletterCount] = await Promise.all([
-    prisma.supporter.count(),
-    prisma.supporter.count({ where: { createdAt: { gte: startOfToday } } }),
-    prisma.supporter.count({ where: { createdAt: { gte: startOfWeek } } }),
-    prisma.supporter.count({ where: { createdAt: { gte: startOfMonth } } }),
+  const confirmedFilter = { confirmed: true }
+  const [total, today, thisWeek, thisMonth, rawChart, rawCityStats, newsletterCount, pendingConfirmation] = await Promise.all([
+    prisma.supporter.count({ where: confirmedFilter }),
+    prisma.supporter.count({ where: { ...confirmedFilter, createdAt: { gte: startOfToday } } }),
+    prisma.supporter.count({ where: { ...confirmedFilter, createdAt: { gte: startOfWeek } } }),
+    prisma.supporter.count({ where: { ...confirmedFilter, createdAt: { gte: startOfMonth } } }),
     prisma.supporter.findMany({
-      where: { createdAt: { gte: thirtyDaysAgo } },
+      where: { ...confirmedFilter, createdAt: { gte: thirtyDaysAgo } },
       select: { createdAt: true },
       orderBy: { createdAt: 'asc' },
     }),
     prisma.supporter.groupBy({
       by: ['city'],
+      where: confirmedFilter,
       _count: { id: true },
       orderBy: { _count: { id: 'desc' } },
       take: 10,
     }),
     prisma.newsletterSubscriber.count(),
+    prisma.supporter.count({ where: { confirmed: false } }),
   ])
 
   // Build daily chart data (last 30 days)
@@ -59,5 +62,5 @@ export async function GET() {
     .filter((row) => row.city !== null)
     .map((row) => ({ city: row.city as string, count: row._count.id }))
 
-  return NextResponse.json({ total, today, thisWeek, thisMonth, chartData, cityStats, newsletterCount })
+  return NextResponse.json({ total, today, thisWeek, thisMonth, chartData, cityStats, newsletterCount, pendingConfirmation })
 }

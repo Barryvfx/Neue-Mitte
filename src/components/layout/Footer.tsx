@@ -94,6 +94,10 @@ export default function Footer() {
                 {[
                   { label: 'Startseite', href: '/' },
                   { label: 'Aktuelles', href: '/aktuelles' },
+                  { label: 'Veranstaltungen', href: '/veranstaltungen' },
+                  { label: 'Petition', href: '/petition' },
+                  { label: 'Presse', href: '/presse' },
+                  { label: 'Newsletter-Archiv', href: '/newsletter-archiv' },
                   { label: 'Unterstützen', href: '/unterstuetzen' },
                   { label: 'Kontakt', href: '/kontakt' },
                 ].map((l) => (

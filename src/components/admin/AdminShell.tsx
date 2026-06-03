@@ -6,6 +6,7 @@ import { useState } from 'react'
 import {
   LayoutDashboard, Users, Newspaper, Mail, FileText, Shield, Settings, LogOut,
   HelpCircle, Calendar, Activity, Bell, Menu, X, ChevronRight,
+  ClipboardList, Megaphone, Link2, BarChart2,
 } from 'lucide-react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import QuickSearch from '@/components/admin/QuickSearch'
@@ -20,6 +21,10 @@ const NAV_LINKS = [
   { label: 'FAQ',             href: '/admin/faq',             icon: HelpCircle,       key: 'faq' },
   { label: 'Veranstaltungen', href: '/admin/veranstaltungen', icon: Calendar,         key: 'veranstaltungen' },
   { label: 'Newsletter',      href: '/admin/newsletter',      icon: Bell,             key: 'newsletter' },
+  { label: 'Petition',        href: '/admin/petition',        icon: ClipboardList,    key: 'petition' },
+  { label: 'Presse',          href: '/admin/presse',          icon: Megaphone,        key: 'presse' },
+  { label: 'Referral-Links',  href: '/admin/referral',        icon: Link2,            key: 'referral' },
+  { label: 'A/B-Test',        href: '/admin/abtest',          icon: BarChart2,        key: 'abtest' },
   { label: 'Login-Log',       href: '/admin/login-log',       icon: Activity,         key: 'login-log' },
   { label: 'Admins',          href: '/admin/admins',          icon: Shield,           key: 'admins' },
   { label: 'Einstellungen',   href: '/admin/settings',        icon: Settings,         key: 'settings' },

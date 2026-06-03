@@ -3,9 +3,11 @@ import { getAdminSession } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 const FROM = process.env.NEWSLETTER_FROM ?? 'Neue Mitte <newsletter@neue-mitte.org>'
+
+function getResend() {
+  return new Resend(process.env.RESEND_API_KEY ?? 'placeholder')
+}
 
 export async function POST(req: NextRequest) {
   const session = await getAdminSession()
@@ -30,6 +32,7 @@ export async function POST(req: NextRequest) {
   let failed = 0
   let lastError = ''
 
+  const resend = getResend()
   for (const subscriber of subscribers) {
     try {
       const { error } = await resend.emails.send({
@@ -48,6 +51,14 @@ export async function POST(req: NextRequest) {
       lastError = err instanceof Error ? err.message : 'Unbekannter Fehler'
       failed++
     }
+  }
+
+  if (sent > 0) {
+    try {
+      await prisma.newsletterSent.create({
+        data: { subject: subjectTrimmed, previewText: preview?.trim() || null, html: htmlBody, recipientCount: sent },
+      })
+    } catch { /* non-critical */ }
   }
 
   return NextResponse.json({

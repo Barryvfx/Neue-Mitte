@@ -247,3 +247,54 @@
     @apply underline decoration-nm-blue/30 underline-offset-4 hover:decoration-nm-blue;
   }
 }
+
+/* ── Dark Mode (public website) ── */
+.dark body {
+  @apply bg-gray-950 text-gray-100;
+}
+
+.dark .bg-white {
+  background-color: #0f172a;
+}
+
+.dark .bg-nm-gray {
+  background-color: #1e293b;
+}
+
+.dark .border-nm-line {
+  border-color: #334155;
+}
+
+.dark header.fixed {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+.dark .text-nm-text {
+  color: #e2e8f0;
+}
+
+.dark .text-nm-muted {
+  color: #94a3b8;
+}
+
+.dark .nm-input {
+  @apply bg-gray-900 border-gray-700 text-gray-100 placeholder-gray-500;
+}
+
+.dark .nm-card {
+  @apply bg-gray-900 border-gray-700;
+}
+
+.dark .nav-link {
+  color: #e2e8f0;
+}
+
+.dark .nav-link:hover,
+.dark .nav-link.active {
+  color: #93c5fd;
+}
+
+.dark .nav-link::after {
+  background: #93c5fd;
+}

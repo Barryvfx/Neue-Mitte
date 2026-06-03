@@ -1,7 +1,43 @@
+'use client'
+
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
+import { useEffect, useState } from 'react'
+
+const VARIANT_A = {
+  headline: <>Deutschland<br />kann mehr.</>,
+  sub: 'Die Neue Mitte kämpft für schnellere Behörden, moderne Schulen, weniger Bürokratie und einen Staat, der Probleme löst statt verwaltet.',
+}
+
+const VARIANT_B = {
+  headline: <>Gemeinsam.<br />Pragmatisch. Neu.</>,
+  sub: 'Die Neue Mitte steht für eine Politik, die liefert: Weniger Ideologie, mehr Lösungen – für Deutschland und seine Bürger.',
+}
+
+function trackClick(variant: string) {
+  fetch('/api/abtest', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ variant, action: 'cta_click' }),
+  }).catch(() => {})
+}
 
 export default function HeroSection() {
+  const [variant, setVariant] = useState<'A' | 'B'>('A')
+
+  useEffect(() => {
+    const stored = localStorage.getItem('nm_ab')
+    if (stored === 'A' || stored === 'B') {
+      setVariant(stored)
+    } else {
+      const v = Math.random() < 0.5 ? 'A' : 'B'
+      localStorage.setItem('nm_ab', v)
+      setVariant(v)
+    }
+  }, [])
+
+  const content = variant === 'B' ? VARIANT_B : VARIANT_A
+
   return (
     <section className="relative bg-nm-blue pt-[130px] pb-20 lg:pt-[150px] lg:pb-28 overflow-hidden">
       {/* Subtle background pattern */}
@@ -29,19 +65,22 @@ export default function HeroSection() {
           </p>
 
           <h1 className="text-display text-white mb-6">
-            Deutschland<br />kann mehr.
+            {content.headline}
           </h1>
 
           <p className="text-lg sm:text-xl text-white/75 leading-relaxed max-w-2xl mb-10 font-normal">
-            Die Neue Mitte kämpft für schnellere Behörden, moderne Schulen,
-            weniger Bürokratie und einen Staat, der Probleme löst statt verwaltet.
+            {content.sub}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4">
             <Link href="/programm" className="btn-outline-white text-base px-7 py-3.5">
               Programm lesen
             </Link>
-            <Link href="/unterstuetzen" className="btn-primary bg-white text-nm-blue hover:bg-white/90 text-base px-7 py-3.5">
+            <Link
+              href="/unterstuetzen"
+              className="btn-primary bg-white text-nm-blue hover:bg-white/90 text-base px-7 py-3.5"
+              onClick={() => trackClick(variant)}
+            >
               Unterstützen
               <ArrowRight className="h-4 w-4" />
             </Link>

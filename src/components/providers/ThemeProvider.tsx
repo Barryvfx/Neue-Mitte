@@ -28,6 +28,7 @@ export default function ThemeProvider({
       : 'light'
     const initial = stored ?? preferred
     setTheme(initial)
+    document.documentElement.classList.toggle('dark', initial === 'dark')
   }, [])
 
   const toggle = () => {

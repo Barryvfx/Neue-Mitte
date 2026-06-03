@@ -3,9 +3,10 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, X, ChevronDown } from 'lucide-react'
+import { Menu, X, ChevronDown, Sun, Moon } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import TopBar from './TopBar'
+import { useTheme } from '@/components/providers/ThemeProvider'
 
 const PROGRAM_LINKS = [
   { label: 'Programmübersicht', href: '/programm', divider: false },
@@ -35,6 +36,7 @@ const NAV_LINKS = [
 
 export default function Navbar() {
   const pathname = usePathname()
+  const { theme, toggle } = useTheme()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [programOpen, setProgramOpen] = useState(false)
   const [mobileProgramOpen, setMobileProgramOpen] = useState(false)
@@ -141,6 +143,13 @@ export default function Navbar() {
 
           {/* CTA */}
           <div className="hidden lg:flex items-center gap-3 flex-shrink-0">
+            <button
+              onClick={toggle}
+              aria-label="Dark Mode umschalten"
+              className="p-2 rounded-lg text-nm-muted hover:text-nm-blue hover:bg-nm-gray transition-all"
+            >
+              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
             <Link href="/unterstuetzen" className="btn-primary text-[13px] px-5 py-2.5">
               Jetzt unterstützen
             </Link>
@@ -196,6 +205,13 @@ export default function Navbar() {
             <Link href="/unterstuetzen" className="btn-primary mt-4 justify-center">
               Jetzt unterstützen
             </Link>
+            <button
+              onClick={toggle}
+              className="mt-2 flex items-center gap-2 py-2.5 text-sm font-medium text-nm-muted hover:text-nm-blue transition-colors"
+            >
+              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {theme === 'dark' ? 'Helles Design' : 'Dunkles Design'}
+            </button>
           </div>
         </div>
       )}
