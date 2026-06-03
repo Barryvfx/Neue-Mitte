@@ -14,6 +14,7 @@ interface Supporter {
   lastName: string
   email: string
   city: string
+  message: string | null
   notes: string
   createdAt: string
 }
@@ -221,6 +222,7 @@ export default function SupporterTable() {
                     </span>
                   </th>
                 ))}
+                <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Nachricht</th>
                 <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Notizen</th>
                 <th className="w-24 px-4 py-3" />
               </tr>
@@ -252,6 +254,11 @@ export default function SupporterTable() {
                       {new Date(s.createdAt).toLocaleDateString('de-DE', {
                         day: '2-digit', month: '2-digit', year: 'numeric'
                       })}
+                    </td>
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 max-w-[180px]">
+                      {s.message
+                        ? <span title={s.message} className="truncate block">{s.message.length > 60 ? s.message.slice(0, 60) + '…' : s.message}</span>
+                        : <span className="text-gray-300 dark:text-gray-600">—</span>}
                     </td>
                     <td className="px-4 py-3 text-gray-500 dark:text-gray-400 max-w-[180px]">
                       {s.notes

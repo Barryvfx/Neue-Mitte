@@ -10,6 +10,7 @@ interface Supporter {
   lastName: string
   email: string
   city: string
+  message: string | null
   notes: string
   createdAt: string
 }
