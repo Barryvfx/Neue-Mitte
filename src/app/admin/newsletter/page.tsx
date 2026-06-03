@@ -3,6 +3,7 @@ import { getAdminSession } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import AdminShell from '@/components/admin/AdminShell'
 import NewsletterTable from '@/components/admin/NewsletterTable'
+import NewsletterCompose from '@/components/admin/NewsletterCompose'
 
 export const dynamic = 'force-dynamic'
 
@@ -28,7 +29,11 @@ export default async function AdminNewsletterPage() {
           {subscribers.length} {subscribers.length === 1 ? 'Abonnent' : 'Abonnenten'} insgesamt
         </p>
       </div>
-      <NewsletterTable subscribers={serialized} />
+
+      <div className="space-y-6">
+        <NewsletterCompose count={subscribers.length} />
+        <NewsletterTable subscribers={serialized} />
+      </div>
     </AdminShell>
   )
 }
