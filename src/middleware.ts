@@ -28,7 +28,7 @@ function resolveAdminPath(pathname: string, isAdminSubdomain: boolean): string {
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
-  const host = request.headers.get('host') ?? ''
+  const host = request.headers.get('x-forwarded-host') ?? request.headers.get('host') ?? ''
   const isAdminSubdomain = host === ADMIN_DOMAIN || host.startsWith(`${ADMIN_DOMAIN}:`)
 
   // ------------------------------------------------------------------
