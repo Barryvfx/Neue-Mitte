@@ -52,7 +52,10 @@ export default function NewsletterSection() {
             </p>
           ) : (
             <form onSubmit={handleSubmit} className="flex gap-0 max-w-sm mx-auto">
-              <input type="text" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} className="hidden" tabIndex={-1} aria-hidden />
+              {/* honeypot – must stay empty */}
+              <div style={{ display: 'none' }} aria-hidden="true">
+                <input type="text" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} tabIndex={-1} autoComplete="off" />
+              </div>
               <input
                 type="email"
                 value={email}

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Loader2, CheckCircle, XCircle } from 'lucide-react'
+import { Loader2, CheckCircle, XCircle, AlertTriangle } from 'lucide-react'
 import AdminShell from '@/components/admin/AdminShell'
 import Button from '@/components/ui/Button'
 
@@ -22,7 +22,7 @@ interface ContentFields {
 
 type SaveStatus = Record<string, { ok: boolean; msg: string }>
 
-const FIELDS: Array<{ key: keyof ContentFields; label: string; multiline?: boolean }> = [
+const TEXT_FIELDS: Array<{ key: keyof ContentFields; label: string; multiline?: boolean }> = [
   { key: 'hero_title', label: 'Hero-Titel' },
   { key: 'hero_subtitle', label: 'Hero-Untertitel', multiline: true },
   { key: 'hero_cta1', label: 'Primärer Button (CTA 1)' },
@@ -33,11 +33,47 @@ const FIELDS: Array<{ key: keyof ContentFields; label: string; multiline?: boole
   { key: 'social_twitter', label: 'Twitter/X URL' },
 ]
 
-const FIELDS_BANNER: Array<{ key: keyof ContentFields; label: string; multiline?: boolean }> = [
-  { key: 'banner_active', label: 'Banner aktiv (true/false)' },
-  { key: 'banner_text', label: 'Banner-Text' },
-  { key: 'maintenance_mode', label: 'Wartungsmodus (true/false)' },
-]
+function Toggle({
+  label,
+  description,
+  checked,
+  onChange,
+  danger,
+}: {
+  label: string
+  description: string
+  checked: boolean
+  onChange: (val: boolean) => void
+  danger?: boolean
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => onChange(!checked)}
+      className="flex items-center justify-between w-full text-left group"
+    >
+      <div>
+        <p className="text-sm font-semibold text-gray-900 dark:text-white">{label}</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{description}</p>
+      </div>
+      <div
+        className={`relative ml-4 flex-shrink-0 w-11 h-6 rounded-full transition-colors ${
+          checked
+            ? danger
+              ? 'bg-red-500'
+              : 'bg-nm-blue'
+            : 'bg-gray-200 dark:bg-gray-700'
+        }`}
+      >
+        <span
+          className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${
+            checked ? 'translate-x-5' : 'translate-x-0'
+          }`}
+        />
+      </div>
+    </button>
+  )
+}
 
 export default function AdminContentPage() {
   const router = useRouter()
@@ -56,9 +92,9 @@ export default function AdminContentPage() {
     social_instagram: '',
     social_tiktok: '',
     social_twitter: '',
-    banner_active: '',
+    banner_active: 'false',
     banner_text: '',
-    maintenance_mode: '',
+    maintenance_mode: 'false',
   })
 
   useEffect(() => {
@@ -85,34 +121,37 @@ export default function AdminContentPage() {
         setFields((prev) => ({ ...prev, ...map }))
       })
       .finally(() => setLoading(false))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authed])
 
-  const saveField = async (key: keyof ContentFields) => {
+  const saveField = async (key: keyof ContentFields, value?: string) => {
+    const val = value ?? fields[key]
     setSaving(key)
-    setSaveStatus((prev) => {
-      const next = { ...prev }
-      delete next[key]
-      return next
-    })
+    setSaveStatus((prev) => { const next = { ...prev }; delete next[key]; return next })
     try {
       const res = await fetch('/api/admin/content', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ key, value: fields[key] }),
+        body: JSON.stringify({ key, value: val }),
       })
       const data = await res.json()
-      if (res.ok) {
-        setSaveStatus((prev) => ({ ...prev, [key]: { ok: true, msg: 'Gespeichert' } }))
-      } else {
-        setSaveStatus((prev) => ({ ...prev, [key]: { ok: false, msg: data.error ?? 'Fehler' } }))
-      }
+      setSaveStatus((prev) => ({
+        ...prev,
+        [key]: { ok: res.ok, msg: res.ok ? 'Gespeichert' : (data.error ?? 'Fehler') },
+      }))
     } finally {
       setSaving(null)
     }
   }
 
+  const handleToggle = (key: 'banner_active' | 'maintenance_mode', val: boolean) => {
+    const strVal = val ? 'true' : 'false'
+    setFields((prev) => ({ ...prev, [key]: strVal }))
+    saveField(key, strVal)
+  }
+
   const saveAll = async () => {
-    for (const { key } of [...FIELDS, ...FIELDS_BANNER]) {
+    for (const { key } of TEXT_FIELDS) {
       await saveField(key)
     }
   }
@@ -131,81 +170,98 @@ export default function AdminContentPage() {
     <AdminShell active="content">
       <div className="mb-8">
         <h1 className="text-2xl font-black text-gray-900 dark:text-white">Inhalte</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Homepage-Inhalte bearbeiten</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Homepage-Inhalte und Website-Einstellungen</p>
       </div>
 
       <div className="max-w-2xl space-y-6">
+
+        {/* Banner & Wartungsmodus */}
         <section className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-6 shadow-sm">
-          <h2 className="text-base font-bold text-gray-900 dark:text-white mb-5">Hero-Bereich</h2>
+          <h2 className="text-base font-bold text-gray-900 dark:text-white mb-1">Ankündigungen & Wartung</h2>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-5">Sofort wirksam — kein Neustart nötig</p>
+
           {loading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
             </div>
           ) : (
             <div className="space-y-5">
-              {FIELDS.map(({ key, label, multiline }) => (
-                <div key={key}>
+              <Toggle
+                label="Ankündigungs-Banner"
+                description="Zeigt einen farbigen Hinweisbalken oben auf der Website"
+                checked={fields.banner_active === 'true'}
+                onChange={(val) => handleToggle('banner_active', val)}
+              />
+              {saveStatus.banner_active && (
+                <span className={`flex items-center gap-1 text-xs ${saveStatus.banner_active.ok ? 'text-green-600 dark:text-green-400' : 'text-red-500'}`}>
+                  {saveStatus.banner_active.ok ? <CheckCircle className="h-3.5 w-3.5" /> : <XCircle className="h-3.5 w-3.5" />}
+                  {saveStatus.banner_active.msg}
+                </span>
+              )}
+
+              {fields.banner_active === 'true' && (
+                <div>
                   <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5">
-                    {label}
+                    Banner-Text
                   </label>
-                  {multiline ? (
-                    <textarea
-                      value={fields[key]}
-                      onChange={(e) => setFields((prev) => ({ ...prev, [key]: e.target.value }))}
-                      rows={3}
-                      className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-nm-blue/30 focus:border-nm-blue dark:focus:border-blue-400 transition-colors resize-none"
-                    />
-                  ) : (
-                    <input
-                      type="text"
-                      value={fields[key]}
-                      onChange={(e) => setFields((prev) => ({ ...prev, [key]: e.target.value }))}
-                      className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-nm-blue/30 focus:border-nm-blue dark:focus:border-blue-400 transition-colors"
-                    />
-                  )}
+                  <input
+                    type="text"
+                    value={fields.banner_text}
+                    onChange={(e) => setFields((prev) => ({ ...prev, banner_text: e.target.value }))}
+                    placeholder="z.B. Neue Mitte jetzt auch in Berlin aktiv!"
+                    className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-nm-blue/30 focus:border-nm-blue transition-colors"
+                  />
                   <div className="flex items-center gap-2 mt-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      loading={saving === key}
-                      onClick={() => saveField(key)}
-                    >
+                    <Button size="sm" variant="outline" loading={saving === 'banner_text'} onClick={() => saveField('banner_text')}>
                       Speichern
                     </Button>
-                    {saveStatus[key] && (
-                      <span className={`flex items-center gap-1 text-xs ${saveStatus[key].ok ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                        {saveStatus[key].ok
-                          ? <CheckCircle className="h-3.5 w-3.5" />
-                          : <XCircle className="h-3.5 w-3.5" />}
-                        {saveStatus[key].msg}
+                    {saveStatus.banner_text && (
+                      <span className={`flex items-center gap-1 text-xs ${saveStatus.banner_text.ok ? 'text-green-600 dark:text-green-400' : 'text-red-500'}`}>
+                        {saveStatus.banner_text.ok ? <CheckCircle className="h-3.5 w-3.5" /> : <XCircle className="h-3.5 w-3.5" />}
+                        {saveStatus.banner_text.msg}
                       </span>
                     )}
                   </div>
                 </div>
-              ))}
+              )}
 
-              <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
-                <Button
-                  size="sm"
-                  loading={saving !== null}
-                  onClick={saveAll}
-                >
-                  Alle speichern
-                </Button>
+              <div className="border-t border-gray-100 dark:border-gray-700 pt-5">
+                <Toggle
+                  label="Wartungsmodus"
+                  description="Alle öffentlichen Seiten zeigen eine Wartungsseite. Admin-Panel bleibt erreichbar."
+                  checked={fields.maintenance_mode === 'true'}
+                  onChange={(val) => handleToggle('maintenance_mode', val)}
+                  danger
+                />
+                {fields.maintenance_mode === 'true' && (
+                  <div className="mt-3 flex items-start gap-2 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 rounded-xl px-4 py-3">
+                    <AlertTriangle className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-red-700 dark:text-red-400">
+                      <strong>Wartungsmodus ist aktiv.</strong> Besucher sehen jetzt eine Wartungsseite. Nur Admins haben Zugriff auf das Panel.
+                    </p>
+                  </div>
+                )}
+                {saveStatus.maintenance_mode && (
+                  <span className={`mt-2 flex items-center gap-1 text-xs ${saveStatus.maintenance_mode.ok ? 'text-green-600 dark:text-green-400' : 'text-red-500'}`}>
+                    {saveStatus.maintenance_mode.ok ? <CheckCircle className="h-3.5 w-3.5" /> : <XCircle className="h-3.5 w-3.5" />}
+                    {saveStatus.maintenance_mode.msg}
+                  </span>
+                )}
               </div>
             </div>
           )}
         </section>
 
+        {/* Text fields */}
         <section className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-6 shadow-sm">
-          <h2 className="text-base font-bold text-gray-900 dark:text-white mb-5">Ankündigung & Wartung</h2>
+          <h2 className="text-base font-bold text-gray-900 dark:text-white mb-5">Texte & Social Media</h2>
           {loading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
             </div>
           ) : (
             <div className="space-y-5">
-              {FIELDS_BANNER.map(({ key, label, multiline }) => (
+              {TEXT_FIELDS.map(({ key, label, multiline }) => (
                 <div key={key}>
                   <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5">
                     {label}
@@ -215,36 +271,34 @@ export default function AdminContentPage() {
                       value={fields[key]}
                       onChange={(e) => setFields((prev) => ({ ...prev, [key]: e.target.value }))}
                       rows={3}
-                      className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-nm-blue/30 focus:border-nm-blue dark:focus:border-blue-400 transition-colors resize-none"
+                      className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-nm-blue/30 focus:border-nm-blue transition-colors resize-none"
                     />
                   ) : (
                     <input
                       type="text"
                       value={fields[key]}
                       onChange={(e) => setFields((prev) => ({ ...prev, [key]: e.target.value }))}
-                      className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-nm-blue/30 focus:border-nm-blue dark:focus:border-blue-400 transition-colors"
+                      className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-nm-blue/30 focus:border-nm-blue transition-colors"
                     />
                   )}
                   <div className="flex items-center gap-2 mt-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      loading={saving === key}
-                      onClick={() => saveField(key)}
-                    >
+                    <Button size="sm" variant="outline" loading={saving === key} onClick={() => saveField(key)}>
                       Speichern
                     </Button>
                     {saveStatus[key] && (
-                      <span className={`flex items-center gap-1 text-xs ${saveStatus[key].ok ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                        {saveStatus[key].ok
-                          ? <CheckCircle className="h-3.5 w-3.5" />
-                          : <XCircle className="h-3.5 w-3.5" />}
+                      <span className={`flex items-center gap-1 text-xs ${saveStatus[key].ok ? 'text-green-600 dark:text-green-400' : 'text-red-500'}`}>
+                        {saveStatus[key].ok ? <CheckCircle className="h-3.5 w-3.5" /> : <XCircle className="h-3.5 w-3.5" />}
                         {saveStatus[key].msg}
                       </span>
                     )}
                   </div>
                 </div>
               ))}
+              <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
+                <Button size="sm" loading={saving !== null} onClick={saveAll}>
+                  Alle speichern
+                </Button>
+              </div>
             </div>
           )}
         </section>

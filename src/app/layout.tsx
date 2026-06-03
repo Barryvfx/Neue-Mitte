@@ -1,8 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import Navbar from '@/components/layout/Navbar'
-import Footer from '@/components/layout/Footer'
 import ThemeProvider from '@/components/providers/ThemeProvider'
 
 const inter = Inter({
@@ -73,9 +71,7 @@ export default function RootLayout({
       </head>
       <body className="antialiased">
         <ThemeProvider>
-          <Navbar />
-          <main>{children}</main>
-          <Footer />
+          {children}
         </ThemeProvider>
       </body>
     </html>

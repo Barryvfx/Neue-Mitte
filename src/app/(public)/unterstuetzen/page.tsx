@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { supporterSchema } from '@/lib/validations'
@@ -17,7 +17,15 @@ const GOALS = [
 
 export default function UnterstuetzenPage() {
   const [submitted, setSubmitted] = useState(false)
+  const [alreadySigned, setAlreadySigned] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    fetch('/api/supporters/token')
+      .then((r) => r.json())
+      .then((data) => { if (data.used) setAlreadySigned(true) })
+      .catch(() => { /* ignore, form will show and server validates */ })
+  }, [])
 
   const {
     register,
@@ -68,17 +76,20 @@ export default function UnterstuetzenPage() {
 
           {/* Form */}
           <div className="lg:col-span-7">
-            {submitted ? (
+            {submitted || alreadySigned ? (
               <div className="border border-nm-line bg-nm-gray p-8">
                 <p className="text-[11px] font-bold tracking-[0.18em] uppercase text-nm-blue mb-2">
-                  Vielen Dank
+                  {alreadySigned && !submitted ? 'Bereits registriert' : 'Vielen Dank'}
                 </p>
                 <h2 className="text-2xl font-black text-nm-blue mb-3">
-                  Sie stehen jetzt für die Neue Mitte.
+                  {alreadySigned && !submitted
+                    ? 'Sie haben bereits unterschrieben.'
+                    : 'Sie stehen jetzt für die Neue Mitte.'}
                 </h2>
                 <p className="text-nm-muted leading-relaxed mb-6">
-                  Ihre Unterstützung ist ein Signal: Deutschland braucht eine pragmatische Mitte.
-                  Wir freuen uns, Sie an unserer Seite zu haben.
+                  {alreadySigned && !submitted
+                    ? 'Ihre Unterstützung ist bereits registriert. Vielen Dank, dass Sie dabei sind!'
+                    : 'Ihre Unterstützung ist ein Signal: Deutschland braucht eine pragmatische Mitte. Wir freuen uns, Sie an unserer Seite zu haben.'}
                 </p>
                 <Link href="/programm" className="btn-primary">
                   Programm lesen

@@ -104,6 +104,17 @@ model NewsletterSubscriber {
   @@map("newsletter_subscribers")
 }
 
+model SupporterToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([token])
+  @@map("supporter_tokens")
+}
+
 model LoginAttempt {
   id        String   @id @default(cuid())
   email     String
