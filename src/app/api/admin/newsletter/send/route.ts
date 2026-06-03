@@ -23,23 +23,24 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Keine Abonnenten vorhanden.' }, { status: 400 })
   }
 
-  const emails = subscribers.map((s) => s.email)
+  const htmlBody = buildHtml(subject.trim(), html.trim(), preview?.trim())
+  const subjectTrimmed = subject.trim()
 
-  // Resend supports up to 50 recipients per batch call
-  const BATCH = 50
+  // Resend batch.send supports up to 100 emails per call
+  const BATCH = 100
   let sent = 0
   let failed = 0
 
-  for (let i = 0; i < emails.length; i += BATCH) {
-    const chunk = emails.slice(i, i + BATCH)
+  for (let i = 0; i < subscribers.length; i += BATCH) {
+    const chunk = subscribers.slice(i, i + BATCH)
+    const messages = chunk.map((s) => ({
+      from: FROM,
+      to: s.email,
+      subject: subjectTrimmed,
+      html: htmlBody,
+    }))
     try {
-      await resend.emails.send({
-        from: FROM,
-        bcc: chunk,        // BCC keeps addresses private from each other
-        to: FROM,          // "to" required, we use the sender address
-        subject: subject.trim(),
-        html: buildHtml(subject.trim(), html.trim(), preview?.trim()),
-      })
+      await resend.batch.send(messages)
       sent += chunk.length
     } catch {
       failed += chunk.length
@@ -56,9 +57,9 @@ function buildHtml(subject: string, body: string, preview?: string) {
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>${subject}</title>
-${preview ? `<div style="display:none;max-height:0;overflow:hidden;">${preview}</div>` : ''}
 </head>
 <body style="margin:0;padding:0;background:#F5F7FA;font-family:system-ui,-apple-system,sans-serif;">
+${preview ? `<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">${preview}&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>` : ''}
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#F5F7FA;padding:40px 0;">
 <tr><td align="center">
 <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#fff;border-radius:8px;overflow:hidden;">

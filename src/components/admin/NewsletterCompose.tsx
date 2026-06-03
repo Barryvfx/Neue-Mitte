@@ -145,21 +145,27 @@ export default function NewsletterCompose({ count }: Props) {
           </div>
 
           {/* Preview */}
-          {showPreview && subject && body && (
+          {showPreview && (
             <div className="border border-gray-200 dark:border-gray-600 rounded-xl overflow-hidden">
               <div className="bg-gray-50 dark:bg-gray-700 px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-600">
                 E-Mail-Vorschau
               </div>
-              <div className="p-4">
-                <div className="bg-[#0B3A75] text-white rounded-t-lg px-6 py-5">
-                  <div className="inline-block bg-white/20 rounded px-3 py-1 text-xs font-black mb-3">Neue Mitte</div>
-                  <h3 className="text-xl font-black leading-snug">{subject}</h3>
+              {!subject && !body ? (
+                <div className="p-6 text-center text-sm text-gray-400 dark:text-gray-500">
+                  Betreff und Inhalt ausfüllen, um die Vorschau zu sehen.
                 </div>
-                <div
-                  className="bg-white px-6 py-6 text-sm text-gray-700 leading-relaxed border border-t-0 border-gray-200 rounded-b-lg"
-                  dangerouslySetInnerHTML={{ __html: body.replace(/\n/g, '<br/>') }}
-                />
-              </div>
+              ) : (
+                <div className="p-4">
+                  <div className="bg-[#0B3A75] text-white rounded-t-lg px-6 py-5">
+                    <div className="inline-block bg-white/20 rounded px-3 py-1 text-xs font-black mb-3">Neue Mitte</div>
+                    <h3 className="text-xl font-black leading-snug">{subject || '(Kein Betreff)'}</h3>
+                  </div>
+                  <div
+                    className="bg-white px-6 py-6 text-sm text-gray-700 leading-relaxed border border-t-0 border-gray-200 rounded-b-lg"
+                    dangerouslySetInnerHTML={{ __html: body ? body.replace(/\n/g, '<br/>') : '<em style="color:#9CA3AF">Kein Inhalt</em>' }}
+                  />
+                </div>
+              )}
             </div>
           )}
 
