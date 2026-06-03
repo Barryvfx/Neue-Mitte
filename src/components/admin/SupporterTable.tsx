@@ -3,10 +3,26 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
   Search, Download, Trash2, ChevronLeft, ChevronRight,
-  ChevronUp, ChevronDown, ChevronsUpDown, Loader2, Pencil,
+  ChevronUp, ChevronDown, ChevronsUpDown, Loader2, Pencil, X,
 } from 'lucide-react'
 import Button from '@/components/ui/Button'
 import SupporterEditModal from '@/components/admin/SupporterEditModal'
+
+function MessageModal({ text, name, onClose }: { text: string; name: string; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl max-w-lg w-full p-6" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-bold text-gray-900 dark:text-white">Nachricht von {name}</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+        <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">{text}</p>
+      </div>
+    </div>
+  )
+}
 
 interface Supporter {
   id: string
@@ -46,6 +62,7 @@ export default function SupporterTable() {
   const [deleting, setDeleting] = useState<string | null>(null)
   const [exporting, setExporting] = useState(false)
   const [editingSupporter, setEditingSupporter] = useState<Supporter | null>(null)
+  const [viewingMessage, setViewingMessage] = useState<{ text: string; name: string } | null>(null)
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
   const [cityFilter, setCityFilter] = useState('')
@@ -255,9 +272,16 @@ export default function SupporterTable() {
                         day: '2-digit', month: '2-digit', year: 'numeric'
                       })}
                     </td>
-                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 max-w-[180px]">
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 max-w-[200px]">
                       {s.message
-                        ? <span title={s.message} className="truncate block">{s.message.length > 60 ? s.message.slice(0, 60) + '…' : s.message}</span>
+                        ? (
+                          <button
+                            onClick={() => setViewingMessage({ text: s.message!, name: `${s.firstName} ${s.lastName}` })}
+                            className="text-left text-nm-blue hover:underline text-xs truncate block max-w-[180px]"
+                          >
+                            {s.message.length > 40 ? s.message.slice(0, 40) + '…' : s.message}
+                          </button>
+                        )
                         : <span className="text-gray-300 dark:text-gray-600">—</span>}
                     </td>
                     <td className="px-4 py-3 text-gray-500 dark:text-gray-400 max-w-[180px]">
@@ -335,6 +359,14 @@ export default function SupporterTable() {
           supporter={editingSupporter}
           onClose={() => setEditingSupporter(null)}
           onSave={handleSave}
+        />
+      )}
+
+      {viewingMessage && (
+        <MessageModal
+          text={viewingMessage.text}
+          name={viewingMessage.name}
+          onClose={() => setViewingMessage(null)}
         />
       )}
     </div>
