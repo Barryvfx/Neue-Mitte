@@ -44,8 +44,10 @@ export async function middleware(request: NextRequest) {
   if (needsAuth) {
     const token = request.cookies.get('nm_admin_token')?.value
 
+    // Build login URL preserving the protocol from the original request
+    // (Cloudflare tunnel may forward as http internally)
     const loginUrl = isAdminSubdomain
-      ? new URL(`https://${ADMIN_DOMAIN}/`) // stays on subdomain, / → /admin (login)
+      ? new URL(`${request.nextUrl.protocol}//${ADMIN_DOMAIN}/`)
       : new URL('/admin', request.url)
 
     if (!token) {

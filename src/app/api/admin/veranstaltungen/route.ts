@@ -21,16 +21,25 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Nicht autorisiert.' }, { status: 401 })
   }
 
-  const body = await req.json()
-  const { title, description, location, date, active } = body
+  let body: Record<string, unknown>
+  try { body = await req.json() } catch { return NextResponse.json({ error: 'Ungültige Anfrage.' }, { status: 400 }) }
+
+  const { title, description, location, date, active } = body as Record<string, string | boolean>
+
+  if (!String(title ?? '').trim()) return NextResponse.json({ error: 'Titel fehlt.' }, { status: 422 })
+  if (!String(description ?? '').trim()) return NextResponse.json({ error: 'Beschreibung fehlt.' }, { status: 422 })
+  if (!date) return NextResponse.json({ error: 'Datum fehlt.' }, { status: 422 })
+
+  const parsedDate = new Date(String(date))
+  if (isNaN(parsedDate.getTime())) return NextResponse.json({ error: 'Ungültiges Datum.' }, { status: 422 })
 
   const event = await prisma.event.create({
     data: {
-      title,
-      description,
-      location,
-      date: new Date(date),
-      active: active ?? true,
+      title: String(title).trim(),
+      description: String(description).trim(),
+      location: String(location ?? '').trim(),
+      date: parsedDate,
+      active: Boolean(active ?? true),
     },
   })
 

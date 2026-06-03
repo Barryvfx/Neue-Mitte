@@ -37,6 +37,9 @@ export default function EventForm({ mode, initialData }: Props) {
 
   async function handleSave() {
     setError('')
+    if (!form.title.trim()) { setError('Bitte Titel eingeben.'); return }
+    if (!form.description.trim()) { setError('Bitte Beschreibung eingeben.'); return }
+    if (!form.date) { setError('Bitte Datum und Uhrzeit auswählen.'); return }
     setSaving(true)
     try {
       const res = await fetch(
@@ -80,6 +83,7 @@ export default function EventForm({ mode, initialData }: Props) {
           value={form.date}
           onChange={(e) => setForm((p) => ({ ...p, date: e.target.value }))}
           className="nm-input"
+          required
         />
       </div>
 

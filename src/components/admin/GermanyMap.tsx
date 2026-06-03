@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react'
 import { ComposableMap, Geographies, Geography, Marker } from 'react-simple-maps'
 
-const GEO_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json'
+const GEO_URL = '/world-atlas-50m.json'
 
 // Major German cities [lng, lat] – normalised lowercase keys
 const CITY_COORDS: Record<string, [number, number]> = {
