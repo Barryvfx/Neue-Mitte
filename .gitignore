@@ -20,6 +20,7 @@ prisma/migrations/
 prisma/*.sqlite
 prisma/*.sqlite-shm
 prisma/*.sqlite-wal
+prisma/prisma/
 
 # Misc
 .DS_Store
