@@ -92,23 +92,24 @@
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2
            bg-nm-blue text-white text-sm font-semibold
-           px-6 py-3 rounded-[3px]
-           hover:bg-nm-dark transition-colors duration-150
-           focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-nm-blue;
+           px-6 py-3 rounded-lg
+           hover:bg-nm-dark transition-all duration-150
+           focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-nm-blue
+           shadow-sm hover:shadow-md;
   }
 
   .btn-outline {
     @apply inline-flex items-center justify-center gap-2
            border-2 border-nm-blue text-nm-blue text-sm font-semibold
-           px-6 py-3 rounded-[3px]
-           hover:bg-nm-blue hover:text-white transition-colors duration-150;
+           px-6 py-3 rounded-lg
+           hover:bg-nm-blue hover:text-white transition-all duration-150;
   }
 
   .btn-outline-white {
     @apply inline-flex items-center justify-center gap-2
            border-2 border-white/70 text-white text-sm font-semibold
-           px-6 py-3 rounded-[3px]
-           hover:bg-white hover:text-nm-blue transition-colors duration-150;
+           px-6 py-3 rounded-lg
+           hover:bg-white hover:text-nm-blue transition-all duration-150;
   }
 
   .btn-ghost {
@@ -175,12 +176,18 @@
     @apply text-xs text-nm-muted font-medium tracking-wide uppercase mb-2 block;
   }
 
+  /* ── Modern card hover ── */
+  .nm-card {
+    @apply border border-nm-line bg-white transition-all duration-200
+           hover:border-nm-blue/40 hover:shadow-md hover:-translate-y-0.5;
+  }
+
   /* ── Forms ── */
   .nm-input {
     @apply w-full px-4 py-3 border border-nm-line bg-white
            text-nm-text placeholder-nm-muted
-           focus:outline-none focus:border-nm-blue focus:ring-1 focus:ring-nm-blue
-           rounded-[3px] text-sm transition-colors;
+           focus:outline-none focus:border-nm-blue focus:ring-2 focus:ring-nm-blue/15
+           rounded-lg text-sm transition-all;
   }
 
   .nm-label {

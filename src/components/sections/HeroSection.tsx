@@ -3,8 +3,26 @@ import { ArrowRight } from 'lucide-react'
 
 export default function HeroSection() {
   return (
-    <section className="bg-nm-blue pt-[130px] pb-20 lg:pt-[150px] lg:pb-28">
-      <div className="nm-container">
+    <section className="relative bg-nm-blue pt-[130px] pb-20 lg:pt-[150px] lg:pb-28 overflow-hidden">
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true"
+        style={{
+          backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)`,
+          backgroundSize: '32px 32px',
+        }}
+      />
+      {/* Gradient fade at right */}
+      <div className="absolute inset-y-0 right-0 w-1/2 pointer-events-none"
+        style={{ background: 'linear-gradient(to left, rgba(3,13,31,0.5), transparent)' }}
+        aria-hidden="true"
+      />
+      {/* Bottom fade */}
+      <div className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
+        style={{ background: 'linear-gradient(to bottom, transparent, rgba(11,58,117,0.4))' }}
+        aria-hidden="true"
+      />
+
+      <div className="nm-container relative">
         <div className="max-w-4xl">
           <p className="text-[11px] font-bold tracking-[0.22em] uppercase text-white/50 mb-6">
             Neue Mitte · Deutschland
