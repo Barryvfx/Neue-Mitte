@@ -6,6 +6,7 @@ import { Loader2 } from 'lucide-react'
 import AdminShell from '@/components/admin/AdminShell'
 import StatsCards from '@/components/admin/StatsCards'
 import Charts from '@/components/admin/Charts'
+import CityChart from '@/components/admin/CityChart'
 
 interface Stats {
   total: number
@@ -13,11 +14,22 @@ interface Stats {
   thisWeek: number
   thisMonth: number
   chartData: Array<{ date: string; count: number }>
+  cityStats: Array<{ city: string | null; _count: { id: number } }>
+}
+
+interface RecentSupporter {
+  id: string
+  firstName: string
+  lastName: string
+  email: string
+  city: string
+  createdAt: string
 }
 
 export default function AdminDashboard() {
   const router = useRouter()
   const [stats, setStats] = useState<Stats | null>(null)
+  const [recentSupporters, setRecentSupporters] = useState<RecentSupporter[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -29,6 +41,17 @@ export default function AdminDashboard() {
       .then((data) => { if (data) setStats(data) })
       .finally(() => setLoading(false))
   }, [router])
+
+  useEffect(() => {
+    fetch('/api/admin/supporters?limit=5&sort=createdAt&order=desc')
+      .then((r) => {
+        if (!r.ok) return null
+        return r.json()
+      })
+      .then((data) => {
+        if (data?.supporters) setRecentSupporters(data.supporters)
+      })
+  }, [])
 
   return (
     <AdminShell active="dashboard">
@@ -45,6 +68,50 @@ export default function AdminDashboard() {
         <div className="space-y-6">
           <StatsCards stats={stats} />
           <Charts data={stats.chartData} />
+          <CityChart data={stats.cityStats ?? []} />
+
+          {/* Letzte Anmeldungen */}
+          <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-6 shadow-card">
+            <h3 className="font-bold text-gray-900 dark:text-white mb-4">Letzte Anmeldungen</h3>
+            {recentSupporters.length === 0 ? (
+              <p className="text-gray-500 dark:text-gray-400 text-sm text-center py-8">
+                Noch keine Anmeldungen vorhanden.
+              </p>
+            ) : (
+              <div className="divide-y divide-gray-50 dark:divide-gray-700/50">
+                {recentSupporters.map((s) => (
+                  <div
+                    key={s.id}
+                    className="flex items-center justify-between py-3 first:pt-0 last:pb-0"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-8 h-8 rounded-full bg-nm-blue/10 dark:bg-nm-blue/20 flex items-center justify-center flex-shrink-0">
+                        <span className="text-xs font-bold text-nm-blue dark:text-blue-400">
+                          {s.firstName.charAt(0)}{s.lastName.charAt(0)}
+                        </span>
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                          {s.firstName} {s.lastName}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{s.email}</p>
+                      </div>
+                    </div>
+                    <div className="text-right flex-shrink-0 ml-4">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                        {new Date(s.createdAt).toLocaleDateString('de-DE', {
+                          day: '2-digit', month: '2-digit', year: 'numeric',
+                        })}
+                      </p>
+                      {s.city && (
+                        <p className="text-xs text-gray-400 dark:text-gray-500">{s.city}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       ) : (
         <p className="text-gray-500 text-center py-12">Daten konnten nicht geladen werden.</p>

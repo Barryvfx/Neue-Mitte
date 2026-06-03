@@ -4,9 +4,10 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
   LayoutDashboard, Users, Newspaper, Mail, FileText, Shield, Settings, LogOut,
-  HelpCircle, Calendar, Activity,
+  HelpCircle, Calendar, Activity, Bell,
 } from 'lucide-react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
+import QuickSearch from '@/components/admin/QuickSearch'
 import { cn } from '@/lib/cn'
 
 const NAV_LINKS = [
@@ -19,6 +20,7 @@ const NAV_LINKS = [
   { label: 'Einstellungen',href: '/admin/settings',   icon: Settings,         key: 'settings' },
   { label: 'FAQ',           href: '/admin/faq',         icon: HelpCircle,       key: 'faq' },
   { label: 'Veranstaltungen', href: '/admin/veranstaltungen', icon: Calendar,  key: 'veranstaltungen' },
+  { label: 'Newsletter',   href: '/admin/newsletter', icon: Bell,             key: 'newsletter' },
   { label: 'Login-Log',    href: '/admin/login-log',  icon: Activity,         key: 'login-log' },
 ]
 
@@ -78,6 +80,7 @@ export default function AdminShell({ children, active }: Props) {
           </div>
         </div>
       </div>
+      <QuickSearch />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {children}
       </div>

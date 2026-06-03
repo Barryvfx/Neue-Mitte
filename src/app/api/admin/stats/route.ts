@@ -17,7 +17,7 @@ export async function GET() {
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 29)
   thirtyDaysAgo.setHours(0, 0, 0, 0)
 
-  const [total, today, thisWeek, thisMonth, rawChart, rawCityStats] = await Promise.all([
+  const [total, today, thisWeek, thisMonth, rawChart, rawCityStats, newsletterCount] = await Promise.all([
     prisma.supporter.count(),
     prisma.supporter.count({ where: { createdAt: { gte: startOfToday } } }),
     prisma.supporter.count({ where: { createdAt: { gte: startOfWeek } } }),
@@ -33,6 +33,7 @@ export async function GET() {
       orderBy: { _count: { id: 'desc' } },
       take: 10,
     }),
+    prisma.newsletterSubscriber.count(),
   ])
 
   // Build daily chart data (last 30 days)
@@ -58,5 +59,5 @@ export async function GET() {
     .filter((row) => row.city !== null)
     .map((row) => ({ city: row.city as string, count: row._count.id }))
 
-  return NextResponse.json({ total, today, thisWeek, thisMonth, chartData, cityStats })
+  return NextResponse.json({ total, today, thisWeek, thisMonth, chartData, cityStats, newsletterCount })
 }

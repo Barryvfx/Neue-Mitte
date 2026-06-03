@@ -68,6 +68,10 @@ export default function SupporterTable() {
   const [cityFilter, setCityFilter] = useState('')
   const [debouncedCity, setDebouncedCity] = useState('')
 
+  // Bulk selection state
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [bulkDeleting, setBulkDeleting] = useState(false)
+
   useEffect(() => {
     const t = setTimeout(() => {
       setDebouncedSearch(search)
@@ -100,6 +104,8 @@ export default function SupporterTable() {
       const res = await fetch(`/api/admin/supporters?${params}`)
       const json = await res.json()
       setData(json)
+      // Clear selection when data refreshes
+      setSelected(new Set())
     } catch {
       // ignore
     } finally {
@@ -154,6 +160,52 @@ export default function SupporterTable() {
         supporters: prev.supporters.map((s) => (s.id === updated.id ? { ...s, ...updated } : s)),
       }
     })
+  }
+
+  // Bulk selection helpers
+  const currentIds = data?.supporters.map((s) => s.id) ?? []
+  const allSelected = currentIds.length > 0 && currentIds.every((id) => selected.has(id))
+  const someSelected = currentIds.some((id) => selected.has(id))
+
+  const toggleAll = () => {
+    if (allSelected) {
+      setSelected((prev) => {
+        const next = new Set(prev)
+        currentIds.forEach((id) => next.delete(id))
+        return next
+      })
+    } else {
+      setSelected((prev) => {
+        const next = new Set(prev)
+        currentIds.forEach((id) => next.add(id))
+        return next
+      })
+    }
+  }
+
+  const toggleOne = (id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const handleBulkDelete = async () => {
+    const count = selected.size
+    if (!confirm(`${count} Unterstützer wirklich löschen?`)) return
+    setBulkDeleting(true)
+    try {
+      await Promise.all(
+        Array.from(selected).map((id) =>
+          fetch(`/api/admin/supporters/${id}`, { method: 'DELETE' })
+        )
+      )
+      fetchData()
+    } finally {
+      setBulkDeleting(false)
+    }
   }
 
   const COLS: { label: string; field: SortField }[] = [
@@ -221,12 +273,42 @@ export default function SupporterTable() {
         </div>
       </div>
 
+      {/* Bulk action bar */}
+      {selected.size > 0 && (
+        <div className="flex items-center justify-between bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800/50 rounded-xl px-4 py-2.5 mb-3">
+          <span className="text-sm font-medium text-red-700 dark:text-red-400">
+            {selected.size} ausgewählt
+          </span>
+          <button
+            onClick={handleBulkDelete}
+            disabled={bulkDeleting}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 rounded-lg transition-colors"
+          >
+            {bulkDeleting
+              ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              : <Trash2 className="h-3.5 w-3.5" />}
+            Ausgewählte löschen
+          </button>
+        </div>
+      )}
+
       {/* Table */}
       <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl overflow-hidden shadow-card">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-100 dark:border-gray-700">
+                {/* Select-all checkbox */}
+                <th className="w-10 px-4 py-3">
+                  <input
+                    type="checkbox"
+                    checked={allSelected}
+                    ref={(el) => { if (el) el.indeterminate = someSelected && !allSelected }}
+                    onChange={toggleAll}
+                    className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-nm-blue focus:ring-nm-blue/30 cursor-pointer"
+                    aria-label="Alle auswählen"
+                  />
+                </th>
                 {COLS.map(({ label, field }) => (
                   <th
                     key={field}
@@ -247,13 +329,13 @@ export default function SupporterTable() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-16">
+                  <td colSpan={9} className="text-center py-16">
                     <Loader2 className="h-6 w-6 animate-spin text-nm-sky mx-auto" />
                   </td>
                 </tr>
               ) : !data?.supporters.length ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-16 text-gray-500">
+                  <td colSpan={9} className="text-center py-16 text-gray-500">
                     {debouncedSearch ? 'Keine Ergebnisse gefunden.' : 'Noch keine Unterstützer.'}
                   </td>
                 </tr>
@@ -261,8 +343,20 @@ export default function SupporterTable() {
                 data.supporters.map((s) => (
                   <tr
                     key={s.id}
-                    className="border-b border-gray-50 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors"
+                    className={`border-b border-gray-50 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors ${
+                      selected.has(s.id) ? 'bg-blue-50/60 dark:bg-blue-950/20' : ''
+                    }`}
                   >
+                    {/* Row checkbox */}
+                    <td className="px-4 py-3">
+                      <input
+                        type="checkbox"
+                        checked={selected.has(s.id)}
+                        onChange={() => toggleOne(s.id)}
+                        className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-nm-blue focus:ring-nm-blue/30 cursor-pointer"
+                        aria-label={`${s.firstName} ${s.lastName} auswählen`}
+                      />
+                    </td>
                     <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">{s.firstName}</td>
                     <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{s.lastName}</td>
                     <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{s.email}</td>

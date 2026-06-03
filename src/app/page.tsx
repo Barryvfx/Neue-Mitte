@@ -4,6 +4,7 @@ import SupporterBanner from '@/components/sections/SupporterBanner'
 import PrioritiesSection from '@/components/sections/PrioritiesSection'
 import NewsPreviewSection from '@/components/sections/NewsPreviewSection'
 import Link from 'next/link'
+import NewsletterSection from '@/components/sections/NewsletterSection'
 
 export const dynamic = 'force-dynamic'
 
@@ -39,6 +40,8 @@ export default async function Home() {
       <SupporterBanner count={count} />
       <PrioritiesSection />
       <NewsPreviewSection />
+
+      <NewsletterSection />
 
       {/* CTA section */}
       <section className="nm-section-sm bg-nm-blue">

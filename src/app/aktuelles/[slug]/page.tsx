@@ -2,6 +2,7 @@ import { prisma } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import ShareButtons from '@/components/news/ShareButtons'
 
 export const dynamic = 'force-dynamic'
 
@@ -39,6 +40,10 @@ export default async function ArticlePage({ params }: Props) {
   const article = await getArticle(slug)
   if (!article) notFound()
 
+  const wordCount = article.content.trim().split(/\s+/).length
+  const readingTime = Math.ceil(wordCount / 200)
+  const articleUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://neue-mitte.org'}/aktuelles/${slug}`
+
   return (
     <div className="bg-white">
       {/* Breadcrumb */}
@@ -59,9 +64,12 @@ export default async function ArticlePage({ params }: Props) {
           <time className="news-date text-sm">
             {formatDate(article.publishedAt)}
           </time>
-          <h1 className="text-3xl sm:text-4xl font-black text-nm-blue tracking-tight mt-2 mb-6">
+          <h1 className="text-3xl sm:text-4xl font-black text-nm-blue tracking-tight mt-2 mb-2">
             {article.title}
           </h1>
+          <p className="text-xs text-nm-muted font-medium mb-6">
+            {readingTime} Min. Lesezeit
+          </p>
           <p className="text-nm-muted text-lg leading-relaxed font-medium border-l-4 border-nm-blue pl-5 mb-8">
             {article.excerpt}
           </p>
@@ -70,7 +78,9 @@ export default async function ArticlePage({ params }: Props) {
             dangerouslySetInnerHTML={{ __html: article.content.replace(/\n\n/g, '</p><p>').replace(/^/, '<p>').replace(/$/, '</p>') }}
           />
 
-          <div className="mt-12 pt-8 border-t border-nm-line">
+          <ShareButtons title={article.title} url={articleUrl} />
+
+          <div className="mt-8 pt-8 border-t border-nm-line">
             <Link href="/aktuelles" className="btn-ghost">
               ← Alle Meldungen
             </Link>
