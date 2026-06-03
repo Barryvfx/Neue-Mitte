@@ -15,7 +15,7 @@ export default function NewsletterCompose({ count }: Props) {
   const [preview, setPreview] = useState('')
   const [showPreview, setShowPreview] = useState(false)
   const [status, setStatus] = useState<SendStatus>('idle')
-  const [result, setResult] = useState<{ sent: number; failed: number } | null>(null)
+  const [result, setResult] = useState<{ sent: number; failed: number; errorDetail?: string } | null>(null)
   const [error, setError] = useState('')
   const [confirmed, setConfirmed] = useState(false)
 
@@ -91,6 +91,11 @@ export default function NewsletterCompose({ count }: Props) {
               <span className="text-red-500 ml-2">· {result.failed} fehlgeschlagen</span>
             )}
           </p>
+          {result.errorDetail && (
+            <p className="text-xs text-red-500 mt-1 font-mono break-all">
+              Fehlerdetail: {result.errorDetail}
+            </p>
+          )}
           <button onClick={reset} className="mt-4 text-sm font-medium text-nm-blue hover:underline">
             Neuen Newsletter verfassen
           </button>

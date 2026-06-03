@@ -26,28 +26,36 @@ export async function POST(req: NextRequest) {
   const htmlBody = buildHtml(subject.trim(), html.trim(), preview?.trim())
   const subjectTrimmed = subject.trim()
 
-  // Resend batch.send supports up to 100 emails per call
-  const BATCH = 100
   let sent = 0
   let failed = 0
+  let lastError = ''
 
-  for (let i = 0; i < subscribers.length; i += BATCH) {
-    const chunk = subscribers.slice(i, i + BATCH)
-    const messages = chunk.map((s) => ({
-      from: FROM,
-      to: s.email,
-      subject: subjectTrimmed,
-      html: htmlBody,
-    }))
+  for (const subscriber of subscribers) {
     try {
-      await resend.batch.send(messages)
-      sent += chunk.length
-    } catch {
-      failed += chunk.length
+      const { error } = await resend.emails.send({
+        from: FROM,
+        to: subscriber.email,
+        subject: subjectTrimmed,
+        html: htmlBody,
+      })
+      if (error) {
+        lastError = error.message
+        failed++
+      } else {
+        sent++
+      }
+    } catch (err: unknown) {
+      lastError = err instanceof Error ? err.message : 'Unbekannter Fehler'
+      failed++
     }
   }
 
-  return NextResponse.json({ sent, failed, total: subscribers.length })
+  return NextResponse.json({
+    sent,
+    failed,
+    total: subscribers.length,
+    ...(lastError ? { errorDetail: lastError } : {}),
+  })
 }
 
 function buildHtml(subject: string, body: string, preview?: string) {
