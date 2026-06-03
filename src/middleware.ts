@@ -6,7 +6,7 @@ const SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET ?? 'dev-secret-change-in-production'
 )
 
-const PROTECTED = ['/admin/dashboard', '/admin/supporters', '/admin/news', '/admin/kontakt', '/admin/settings', '/admin/admins', '/admin/content']
+const PROTECTED = ['/admin/dashboard', '/admin/supporters', '/admin/news', '/admin/kontakt', '/admin/settings', '/admin/admins', '/admin/content', '/admin/faq', '/admin/veranstaltungen', '/admin/login-log']
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -31,5 +31,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/dashboard/:path*', '/admin/supporters/:path*', '/admin/news/:path*', '/admin/kontakt/:path*', '/admin/settings/:path*', '/admin/admins/:path*', '/admin/content/:path*'],
+  matcher: ['/admin/dashboard/:path*', '/admin/supporters/:path*', '/admin/news/:path*', '/admin/kontakt/:path*', '/admin/settings/:path*', '/admin/admins/:path*', '/admin/content/:path*', '/admin/faq/:path*', '/admin/veranstaltungen/:path*', '/admin/login-log/:path*'],
 }

@@ -35,13 +35,17 @@ export async function POST(req: NextRequest) {
   const admin = await prisma.admin.findUnique({ where: { email } })
   if (!admin) {
     await bcryptjs.hash('dummy', 10)
+    try { await prisma.loginAttempt.create({ data: { email, ip, success: false } }) } catch {}
     return NextResponse.json({ error: 'Ungültige Zugangsdaten.' }, { status: 401 })
   }
 
   const valid = await bcryptjs.compare(password, admin.password)
   if (!valid) {
+    try { await prisma.loginAttempt.create({ data: { email, ip, success: false } }) } catch {}
     return NextResponse.json({ error: 'Ungültige Zugangsdaten.' }, { status: 401 })
   }
+
+  try { await prisma.loginAttempt.create({ data: { email, ip, success: true } }) } catch {}
 
   const token = await signToken({ adminId: admin.id, email: admin.email })
 

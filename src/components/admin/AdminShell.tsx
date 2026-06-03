@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
   LayoutDashboard, Users, Newspaper, Mail, FileText, Shield, Settings, LogOut,
+  HelpCircle, Calendar, Activity,
 } from 'lucide-react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import { cn } from '@/lib/cn'
@@ -16,6 +17,9 @@ const NAV_LINKS = [
   { label: 'Inhalte',      href: '/admin/content',    icon: FileText,         key: 'content' },
   { label: 'Admins',       href: '/admin/admins',     icon: Shield,           key: 'admins' },
   { label: 'Einstellungen',href: '/admin/settings',   icon: Settings,         key: 'settings' },
+  { label: 'FAQ',           href: '/admin/faq',         icon: HelpCircle,       key: 'faq' },
+  { label: 'Veranstaltungen', href: '/admin/veranstaltungen', icon: Calendar,  key: 'veranstaltungen' },
+  { label: 'Login-Log',    href: '/admin/login-log',  icon: Activity,         key: 'login-log' },
 ]
 
 interface Props {
