@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ sent, failed, total: emails.length })
+  return NextResponse.json({ sent, failed, total: subscribers.length })
 }
 
 function buildHtml(subject: string, body: string, preview?: string) {

@@ -28,6 +28,7 @@ const PROGRAM_LINKS = [
 const NAV_LINKS = [
   { label: 'Start', href: '/' },
   { label: 'Aktuelles', href: '/aktuelles' },
+  { label: 'Veranstaltungen', href: '/veranstaltungen' },
   { label: 'Unterstützen', href: '/unterstuetzen' },
   { label: 'Kontakt', href: '/kontakt' },
 ]

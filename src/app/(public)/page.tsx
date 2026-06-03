@@ -5,6 +5,7 @@ import PrioritiesSection from '@/components/sections/PrioritiesSection'
 import NewsPreviewSection from '@/components/sections/NewsPreviewSection'
 import Link from 'next/link'
 import NewsletterSection from '@/components/sections/NewsletterSection'
+import EventsPreviewSection from '@/components/sections/EventsPreviewSection'
 
 export const dynamic = 'force-dynamic'
 
@@ -40,6 +41,7 @@ export default async function Home() {
       <SupporterBanner count={count} />
       <PrioritiesSection />
       <NewsPreviewSection />
+      <EventsPreviewSection />
 
       <NewsletterSection />
 
