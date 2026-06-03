@@ -17,6 +17,9 @@ build/
 
 # Prisma
 prisma/migrations/
+prisma/*.sqlite
+prisma/*.sqlite-shm
+prisma/*.sqlite-wal
 
 # Misc
 .DS_Store
