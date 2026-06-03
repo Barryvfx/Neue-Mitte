@@ -50,13 +50,19 @@ export async function POST(req: NextRequest) {
   const token = await signToken({ adminId: admin.id, email: admin.email })
 
   const response = NextResponse.json({ success: true })
-  response.cookies.set(cookieName(), token, {
+  const cookieOpts: Parameters<typeof response.cookies.set>[2] = {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     maxAge: 60 * 60 * 8,
     path: '/',
-  })
+  }
+  // If COOKIE_DOMAIN is set (e.g. ".neue-mitte.org"), the cookie is shared
+  // across all subdomains (neue-mitte.org AND admin.neue-mitte.org).
+  if (process.env.COOKIE_DOMAIN) {
+    cookieOpts.domain = process.env.COOKIE_DOMAIN
+  }
+  response.cookies.set(cookieName(), token, cookieOpts)
 
   return response
 }
