@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { seedFaktencheck } from '@/lib/autoseed'
 
 export async function GET(req: NextRequest) {
   try {
+    await seedFaktencheck()
     const slug = req.nextUrl.searchParams.get('slug')
     if (slug) {
       const item = await prisma.faktencheck.findUnique({

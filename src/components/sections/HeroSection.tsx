@@ -3,16 +3,7 @@
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { useEffect, useState } from 'react'
-
-const VARIANT_A = {
-  headline: <>Deutschland<br />kann mehr.</>,
-  sub: 'Die Neue Mitte kämpft für schnellere Behörden, moderne Schulen, weniger Bürokratie und einen Staat, der Probleme löst statt verwaltet.',
-}
-
-const VARIANT_B = {
-  headline: <>Gemeinsam.<br />Pragmatisch. Neu.</>,
-  sub: 'Die Neue Mitte steht für eine Politik, die liefert: Weniger Ideologie, mehr Lösungen – für Deutschland und seine Bürger.',
-}
+import { HERO_HEADLINES } from '@/lib/seed-content'
 
 function trackClick(variant: string) {
   fetch('/api/abtest', {
@@ -23,20 +14,27 @@ function trackClick(variant: string) {
 }
 
 export default function HeroSection() {
-  const [variant, setVariant] = useState<'A' | 'B'>('A')
+  const [index, setIndex] = useState(0)
+  const [visible, setVisible] = useState(true)
 
+  // Random starting headline so it differs on every visit
   useEffect(() => {
-    const stored = localStorage.getItem('nm_ab')
-    if (stored === 'A' || stored === 'B') {
-      setVariant(stored)
-    } else {
-      const v = Math.random() < 0.5 ? 'A' : 'B'
-      localStorage.setItem('nm_ab', v)
-      setVariant(v)
-    }
+    setIndex(Math.floor(Math.random() * HERO_HEADLINES.length))
   }, [])
 
-  const content = variant === 'B' ? VARIANT_B : VARIANT_A
+  // Auto-rotate every 6 seconds with a fade transition
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setVisible(false)
+      setTimeout(() => {
+        setIndex(i => (i + 1) % HERO_HEADLINES.length)
+        setVisible(true)
+      }, 500)
+    }, 6000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const content = HERO_HEADLINES[index]
 
   return (
     <section className="relative bg-nm-blue pt-[130px] pb-20 lg:pt-[150px] lg:pb-28 overflow-hidden">
@@ -64,13 +62,21 @@ export default function HeroSection() {
             Neue Mitte · Deutschland
           </p>
 
-          <h1 className="text-display text-white mb-6">
-            {content.headline}
-          </h1>
+          {/* Rotating headline + subline */}
+          <div className={`transition-opacity duration-500 ${visible ? 'opacity-100' : 'opacity-0'}`}>
+            <h1 className="text-display text-white mb-6 min-h-[2.2em]">
+              {content.headline.map((line, i) => (
+                <span key={i}>
+                  {line}
+                  {i < content.headline.length - 1 && <br />}
+                </span>
+              ))}
+            </h1>
 
-          <p className="text-lg sm:text-xl text-white/75 leading-relaxed max-w-2xl mb-10 font-normal">
-            {content.sub}
-          </p>
+            <p className="text-lg sm:text-xl text-white/75 leading-relaxed max-w-2xl mb-10 font-normal min-h-[3.5em]">
+              {content.sub}
+            </p>
+          </div>
 
           <div className="flex flex-col sm:flex-row gap-4">
             <Link href="/programm" className="btn-outline-white text-base px-7 py-3.5">
@@ -79,11 +85,23 @@ export default function HeroSection() {
             <Link
               href="/unterstuetzen"
               className="btn-primary bg-white text-nm-blue hover:bg-white/90 text-base px-7 py-3.5"
-              onClick={() => trackClick(variant)}
+              onClick={() => trackClick(`hero_${index}`)}
             >
               Unterstützen
               <ArrowRight className="h-4 w-4" />
             </Link>
+          </div>
+
+          {/* Rotation indicator dots */}
+          <div className="flex gap-1.5 mt-10">
+            {HERO_HEADLINES.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => { setVisible(false); setTimeout(() => { setIndex(i); setVisible(true) }, 200) }}
+                aria-label={`Slogan ${i + 1} anzeigen`}
+                className={`h-1.5 rounded-full transition-all duration-300 ${i === index ? 'w-6 bg-white' : 'w-1.5 bg-white/30 hover:bg-white/50'}`}
+              />
+            ))}
           </div>
         </div>
       </div>

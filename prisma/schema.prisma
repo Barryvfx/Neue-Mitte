@@ -339,6 +339,10 @@ model Wissenstest {
   correct   String
   category  String   @default("Allgemein")
   active    Boolean  @default(true)
+  countA    Int      @default(0)
+  countB    Int      @default(0)
+  countC    Int      @default(0)
+  countD    Int      @default(0)
   createdAt DateTime @default(now())
 
   @@map("wissenstest_fragen")

@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { seedGesetz } from '@/lib/autoseed'
 
 export async function GET(req: NextRequest) {
   try {
+    await seedGesetz()
     const id = req.nextUrl.searchParams.get('id')
     if (id) {
       const item = await prisma.gesetzFokus.findUnique({ where: { id } })

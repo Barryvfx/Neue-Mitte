@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { seedDebatte } from '@/lib/autoseed'
 
 export async function GET(req: NextRequest) {
   try {
+    await seedDebatte()
     const id = req.nextUrl.searchParams.get('id')
     if (id) {
       const debatte = await prisma.debatte.findUnique({
