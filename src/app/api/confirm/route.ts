@@ -56,7 +56,15 @@ export async function GET(req: NextRequest) {
       })
     } catch { /* non-critical */ }
 
-    return NextResponse.redirect(new URL('/unterstuetzen?confirmed=1', req.url))
+    const response = NextResponse.redirect(new URL('/unterstuetzen?confirmed=1', req.url))
+    response.cookies.set('nm_confirmed_email', supporter.email, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 365,
+      path: '/',
+    })
+    return response
   } catch {
     return NextResponse.redirect(new URL('/?confirm=error', req.url))
   }

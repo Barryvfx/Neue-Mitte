@@ -140,6 +140,7 @@ model PollOption {
 model NewsletterSubscriber {
   id        String   @id @default(cuid())
   email     String   @unique
+  topics    String   @default("")
   createdAt DateTime @default(now())
 
   @@map("newsletter_subscribers")
@@ -302,4 +303,136 @@ model LoginAttempt {
 
   @@index([createdAt])
   @@map("login_attempts")
+}
+
+model Debatte {
+  id        String       @id @default(cuid())
+  title     String
+  topic     String       @default("Allgemein")
+  status    String       @default("offen")
+  createdAt DateTime     @default(now())
+  argumente DebatteArg[]
+
+  @@map("debatten")
+}
+
+model DebatteArg {
+  id        String   @id @default(cuid())
+  debatteId String
+  text      String
+  seite     String
+  votes     Int      @default(0)
+  createdAt DateTime @default(now())
+  debatte   Debatte  @relation(fields: [debatteId], references: [id], onDelete: Cascade)
+
+  @@index([debatteId])
+  @@map("debatte_argumente")
+}
+
+model Wissenstest {
+  id        String   @id @default(cuid())
+  question  String
+  optionA   String
+  optionB   String
+  optionC   String
+  optionD   String
+  correct   String
+  category  String   @default("Allgemein")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@map("wissenstest_fragen")
+}
+
+model Faktencheck {
+  id        String   @id @default(cuid())
+  claim     String
+  person    String?
+  rating    String   @default("ungeprüft")
+  analysis  String
+  sources   String?
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([published])
+  @@map("faktenchecks")
+}
+
+model GesetzFokus {
+  id        String   @id @default(cuid())
+  title     String
+  lawName   String
+  summary   String
+  content   String
+  link      String?
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([published])
+  @@map("gesetz_fokus")
+}
+
+model TransparenzEintrag {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  category  String   @default("Entscheidung")
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@index([published, createdAt])
+  @@map("transparenz_eintraege")
+}
+
+model Ehrenamt {
+  id          String    @id @default(cuid())
+  title       String
+  description String
+  location    String?
+  date        DateTime?
+  category    String    @default("Allgemein")
+  contact     String?
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+
+  @@map("ehrenamt")
+}
+
+model Wahlhelfer {
+  id        String   @id @default(cuid())
+  district  String
+  city      String
+  state     String   @default("Bayern")
+  needed    Int      @default(1)
+  filled    Int      @default(0)
+  contact   String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@map("wahlhelfer")
+}
+
+model MitgliedsContent {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  type      String   @default("dokument")
+  order     Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@map("mitglieds_content")
+}
+
+model CivicScore {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  score      Int      @default(0)
+  actions    Int      @default(0)
+  lastAction String?
+  updatedAt  DateTime @updatedAt
+
+  @@index([score])
+  @@map("civic_scores")
 }

@@ -6,6 +6,7 @@ import { rateLimit } from '@/lib/rate-limit'
 
 const newsletterSchema = z.object({
   email: z.string().email('Ungültige E-Mail-Adresse').max(254),
+  topics: z.string().optional(),
   website: z.string().optional(),
 })
 
@@ -36,7 +37,7 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  const { email, website } = result.data
+  const { email, topics, website } = result.data
 
   // Honeypot: if the hidden field is filled, silently succeed
   if (website && website.length > 0) {
@@ -45,7 +46,7 @@ export async function POST(req: NextRequest) {
 
   try {
     await prisma.newsletterSubscriber.create({
-      data: { email },
+      data: { email, topics: topics ?? '' },
     })
     return NextResponse.json({ success: true }, { status: 201 })
   } catch (err: unknown) {

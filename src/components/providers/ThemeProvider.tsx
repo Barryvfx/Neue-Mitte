@@ -26,7 +26,7 @@ export default function ThemeProvider({
     const preferred = window.matchMedia('(prefers-color-scheme: dark)').matches
       ? 'dark'
       : 'light'
-    const initial = stored ?? preferred
+    const initial = stored ?? 'light'
     setTheme(initial)
     document.documentElement.classList.toggle('dark', initial === 'dark')
   }, [])

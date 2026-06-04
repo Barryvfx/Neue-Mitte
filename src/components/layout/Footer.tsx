@@ -99,6 +99,7 @@ export default function Footer() {
                   { label: 'Presse', href: '/presse' },
                   { label: 'Newsletter-Archiv', href: '/newsletter-archiv' },
                   { label: 'Unterstützen', href: '/unterstuetzen' },
+                  { label: 'Mitgliederbereich', href: '/mitglieder' },
                   { label: 'Kontakt', href: '/kontakt' },
                 ].map((l) => (
                   <li key={l.href}>
@@ -110,10 +111,24 @@ export default function Footer() {
               </ul>
             </div>
             <div>
-              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/40 mb-4">Rechtliches</p>
+              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/40 mb-4">Mitmachen</p>
               <ul className="space-y-2.5">
-                <li><Link href="/impressum" className="text-[13px] text-white/60 hover:text-white transition-colors">Impressum</Link></li>
-                <li><Link href="/datenschutz" className="text-[13px] text-white/60 hover:text-white transition-colors">Datenschutz</Link></li>
+                {[
+                  { label: 'Bürgerfragen', href: '/buergerfragen' },
+                  { label: 'Ideen', href: '/ideen' },
+                  { label: 'Debatte', href: '/debatte' },
+                  { label: 'Ehrenamt', href: '/ehrenamt' },
+                  { label: 'Wahlhelfer', href: '/wahlhelfer' },
+                  { label: 'Wissenstest', href: '/wissenstest' },
+                  { label: 'Impressum', href: '/impressum' },
+                  { label: 'Datenschutz', href: '/datenschutz' },
+                ].map((l) => (
+                  <li key={l.href}>
+                    <Link href={l.href} className="text-[13px] text-white/60 hover:text-white transition-colors">
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>

@@ -8,6 +8,21 @@ import { cn } from '@/lib/cn'
 import TopBar from './TopBar'
 import { useTheme } from '@/components/providers/ThemeProvider'
 
+const MITMACHEN_LINKS = [
+  { label: 'Bürgerfragen', href: '/buergerfragen', desc: 'Fragen stellen & abstimmen' },
+  { label: 'Ideen einreichen', href: '/ideen', desc: 'Eigene Ideen vorschlagen' },
+  { label: 'Debattier-Forum', href: '/debatte', desc: 'Pro & Contra diskutieren' },
+  { label: 'Versprechen-Tracker', href: '/versprechen', desc: 'Forderungen verfolgen' },
+  { label: 'Ehrenamt', href: '/ehrenamt', desc: 'Freiwillig mitmachen' },
+  { label: 'Wahlhelfer', href: '/wahlhelfer', desc: 'Helfen bei der Wahl' },
+  { label: 'Wähler-Kompass', href: '/waehler-kompass', desc: 'Politische Position finden' },
+  { label: 'Wissenstest', href: '/wissenstest', desc: 'Politisches Wissen testen' },
+  { label: 'KI-Assistent', href: '/chatbot', desc: 'Fragen zur Politik stellen' },
+  { label: 'Faktencheck', href: '/faktencheck', desc: 'Politische Aussagen prüfen' },
+  { label: 'Politik erklärt', href: '/erklaert', desc: 'Themen verständlich erklärt' },
+  { label: 'Civic Score', href: '/civic-score', desc: 'Engagement-Punkte' },
+]
+
 const PROGRAM_LINKS = [
   { label: 'Programmübersicht', href: '/programm', divider: false },
   { label: 'Wirtschaft', href: '/wirtschaft', divider: false },
@@ -39,9 +54,12 @@ export default function Navbar() {
   const { theme, toggle } = useTheme()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [programOpen, setProgramOpen] = useState(false)
+  const [mitmachenOpen, setMitmachenOpen] = useState(false)
   const [mobileProgramOpen, setMobileProgramOpen] = useState(false)
+  const [mobileMitmachenOpen, setMobileMitmachenOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const mitmachenRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 4)
@@ -56,9 +74,8 @@ export default function Navbar() {
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setProgramOpen(false)
-      }
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) setProgramOpen(false)
+      if (mitmachenRef.current && !mitmachenRef.current.contains(e.target as Node)) setMitmachenOpen(false)
     }
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
@@ -130,6 +147,31 @@ export default function Navbar() {
               )}
             </div>
 
+            {/* Mitmachen dropdown */}
+            <div className="relative" ref={mitmachenRef}>
+              <button
+                onClick={() => setMitmachenOpen(o => !o)}
+                className={cn('nav-link flex items-center gap-1', MITMACHEN_LINKS.some(l => pathname === l.href) && 'active')}
+              >
+                Mitmachen
+                <ChevronDown className={cn('h-3.5 w-3.5 transition-transform duration-200', mitmachenOpen && 'rotate-180')} />
+              </button>
+              {mitmachenOpen && (
+                <div className="absolute top-full left-0 mt-2 w-72 bg-white border border-nm-line shadow-lg z-50 py-2 rounded-lg">
+                  <div className="grid grid-cols-1 gap-0.5">
+                    {MITMACHEN_LINKS.map((link) => (
+                      <Link key={link.href} href={link.href}
+                        className={cn('block px-4 py-2.5 hover:bg-nm-gray transition-colors', pathname === link.href && 'bg-nm-gray')}
+                      >
+                        <span className="text-sm font-medium text-nm-text block">{link.label}</span>
+                        <span className="text-xs text-nm-muted">{link.desc}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
@@ -186,6 +228,24 @@ export default function Navbar() {
                     href={link.href}
                     className="block py-2 text-sm text-nm-muted hover:text-nm-blue transition-colors"
                   >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            {/* Mobile Mitmachen */}
+            <button
+              onClick={() => setMobileMitmachenOpen(o => !o)}
+              className="flex items-center justify-between py-3 text-sm font-medium text-nm-text border-b border-nm-line"
+            >
+              Mitmachen
+              <ChevronDown className={cn('h-4 w-4 transition-transform', mobileMitmachenOpen && 'rotate-180')} />
+            </button>
+            {mobileMitmachenOpen && (
+              <div className="py-2 pl-3 border-b border-nm-line mb-1">
+                {MITMACHEN_LINKS.map((link) => (
+                  <Link key={link.href} href={link.href} className="block py-2 text-sm text-nm-muted hover:text-nm-blue transition-colors">
                     {link.label}
                   </Link>
                 ))}
