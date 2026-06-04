@@ -11,6 +11,7 @@ import PollWidget from '@/components/sections/PollWidget'
 import QuoteShare from '@/components/sections/QuoteShare'
 import ProgramQuiz from '@/components/sections/ProgramQuiz'
 import CountdownTimer from '@/components/sections/CountdownTimer'
+import WahlTicker from '@/components/sections/WahlTicker'
 
 export const dynamic = 'force-dynamic'
 
@@ -42,6 +43,7 @@ export default async function Home() {
         </div>
       )}
 
+      <WahlTicker />
       <HeroSection />
       <SupporterBanner count={count} />
 

@@ -117,11 +117,12 @@ model EventRegistration {
 }
 
 model Poll {
-  id        String       @id @default(cuid())
-  question  String
-  active    Boolean      @default(true)
-  createdAt DateTime     @default(now())
-  options   PollOption[]
+  id          String       @id @default(cuid())
+  question    String
+  active      Boolean      @default(true)
+  isBarometer Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  options     PollOption[]
 
   @@map("polls")
 }
@@ -200,6 +201,85 @@ model AbTestClick {
 
   @@index([variant, action])
   @@map("ab_test_clicks")
+}
+
+model BuergerFrage {
+  id         String   @id @default(cuid())
+  question   String
+  authorName String
+  published  Boolean  @default(false)
+  answered   Boolean  @default(false)
+  answer     String?
+  votes      Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  @@index([published, votes])
+  @@map("buerger_fragen")
+}
+
+model Idee {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  authorName  String?
+  votes       Int      @default(0)
+  status      String   @default("eingereicht")
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([published, votes])
+  @@map("ideen")
+}
+
+model Versprechen {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  status      String   @default("gefordert")
+  category    String   @default("Allgemein")
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@map("versprechen")
+}
+
+model WahlTicker {
+  id        String           @id @default(cuid())
+  title     String
+  active    Boolean          @default(true)
+  createdAt DateTime         @default(now())
+  items     WahlTickerItem[]
+
+  @@map("wahl_ticker")
+}
+
+model WahlTickerItem {
+  id        String     @id @default(cuid())
+  tickerId  String
+  text      String
+  important Boolean    @default(false)
+  createdAt DateTime   @default(now())
+  ticker    WahlTicker @relation(fields: [tickerId], references: [id], onDelete: Cascade)
+
+  @@index([tickerId, createdAt])
+  @@map("wahl_ticker_items")
+}
+
+model BildungArtikel {
+  id        String   @id @default(cuid())
+  title     String
+  slug      String   @unique
+  summary   String
+  content   String
+  topic     String   @default("Allgemein")
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([published, topic])
+  @@map("bildung_artikel")
 }
 
 model SupporterToken {

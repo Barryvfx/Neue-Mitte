@@ -7,6 +7,7 @@ import {
   LayoutDashboard, Users, Newspaper, Mail, FileText, Shield, Settings, LogOut,
   HelpCircle, Calendar, Activity, Bell, Menu, X, ChevronRight,
   ClipboardList, Megaphone, Link2, BarChart2,
+  MessageSquare, Lightbulb, CheckSquare, Radio, BookOpen,
 } from 'lucide-react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import QuickSearch from '@/components/admin/QuickSearch'
@@ -25,6 +26,11 @@ const NAV_LINKS = [
   { label: 'Presse',          href: '/admin/presse',          icon: Megaphone,        key: 'presse' },
   { label: 'Referral-Links',  href: '/admin/referral',        icon: Link2,            key: 'referral' },
   { label: 'A/B-Test',        href: '/admin/abtest',          icon: BarChart2,        key: 'abtest' },
+  { label: 'Bürgerfragen',    href: '/admin/buergerfragen',   icon: MessageSquare,    key: 'buergerfragen' },
+  { label: 'Ideen',           href: '/admin/ideen',           icon: Lightbulb,        key: 'ideen' },
+  { label: 'Versprechen',     href: '/admin/versprechen',     icon: CheckSquare,      key: 'versprechen' },
+  { label: 'Live-Ticker',     href: '/admin/wahl-ticker',     icon: Radio,            key: 'wahl-ticker' },
+  { label: 'Politik erklärt', href: '/admin/erklaert',        icon: BookOpen,         key: 'erklaert' },
   { label: 'Login-Log',       href: '/admin/login-log',       icon: Activity,         key: 'login-log' },
   { label: 'Admins',          href: '/admin/admins',          icon: Shield,           key: 'admins' },
   { label: 'Einstellungen',   href: '/admin/settings',        icon: Settings,         key: 'settings' },
