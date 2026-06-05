@@ -442,16 +442,33 @@ model CivicScore {
 }
 
 model Mitglied {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String
-  bio       String   @default("")
-  city      String   @default("")
-  interests String   @default("")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String            @id @default(cuid())
+  email       String            @unique
+  password    String
+  name        String
+  bio         String            @default("")
+  city        String            @default("")
+  interests   String            @default("")
+  avatarColor String            @default("#0B3A75")
+  avatarEmoji String            @default("")
+  showName    Boolean           @default(true)
+  showCity    Boolean           @default(true)
+  showBio     Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  messages    MitgliedMessage[]
 
   @@index([createdAt])
   @@map("mitglieder")
+}
+
+model MitgliedMessage {
+  id        String   @id @default(cuid())
+  senderId  String
+  text      String
+  createdAt DateTime @default(now())
+  sender    Mitglied @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt])
+  @@map("mitglied_messages")
 }
