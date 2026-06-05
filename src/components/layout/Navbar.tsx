@@ -13,14 +13,13 @@ const MITMACHEN_LINKS = [
   { label: 'Ideen einreichen', href: '/ideen', desc: 'Eigene Ideen vorschlagen' },
   { label: 'Debattier-Forum', href: '/debatte', desc: 'Pro & Contra diskutieren' },
   { label: 'Versprechen-Tracker', href: '/versprechen', desc: 'Forderungen verfolgen' },
-  { label: 'Ehrenamt', href: '/ehrenamt', desc: 'Freiwillig mitmachen' },
-  { label: 'Wahlhelfer', href: '/wahlhelfer', desc: 'Helfen bei der Wahl' },
   { label: 'Wähler-Kompass', href: '/waehler-kompass', desc: 'Politische Position finden' },
   { label: 'Wissenstest', href: '/wissenstest', desc: 'Politisches Wissen testen' },
   { label: 'KI-Assistent', href: '/chatbot', desc: 'Fragen zur Politik stellen' },
   { label: 'Faktencheck', href: '/faktencheck', desc: 'Politische Aussagen prüfen' },
   { label: 'Politik erklärt', href: '/erklaert', desc: 'Themen verständlich erklärt' },
   { label: 'Civic Score', href: '/civic-score', desc: 'Engagement-Punkte' },
+  { label: 'Mitglieder-Panel', href: '/mitglieder', desc: 'Community & exklusive Inhalte' },
 ]
 
 const PROGRAM_LINKS = [

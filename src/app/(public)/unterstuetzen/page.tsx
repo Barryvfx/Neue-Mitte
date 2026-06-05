@@ -7,8 +7,7 @@ import { supporterSchema } from '@/lib/validations'
 import type { z } from 'zod'
 import Link from 'next/link'
 import MemberCard from '@/components/sections/MemberCard'
-import { useSearchParams } from 'next/navigation'
-import { CheckCircle, Mail } from 'lucide-react'
+import { CheckCircle } from 'lucide-react'
 
 type SupporterData = z.infer<typeof supporterSchema>
 type TickerChoice = 'first' | 'city' | 'both' | 'custom'
@@ -20,10 +19,7 @@ const GOALS = [
 ]
 
 export default function UnterstuetzenPage() {
-  const searchParams = useSearchParams()
-  const isConfirmed = searchParams.get('confirmed') === '1'
   const [submitted, setSubmitted] = useState(false)
-  const [needsConfirmation, setNeedsConfirmation] = useState(false)
   const [submittedData, setSubmittedData] = useState<{ firstName: string; lastName: string; city?: string } | null>(null)
   const [alreadySigned, setAlreadySigned] = useState(false)
   const [error, setError] = useState('')
@@ -72,11 +68,7 @@ export default function UnterstuetzenPage() {
       const json = await res.json()
       if (!res.ok) { setError(json.error || 'Ein Fehler ist aufgetreten.'); return }
       setSubmittedData({ firstName: data.firstName, lastName: data.lastName, city: data.city })
-      if (json.needsConfirmation) {
-        setNeedsConfirmation(true)
-      } else {
-        setSubmitted(true)
-      }
+      setSubmitted(true)
     } catch {
       setError('Verbindungsfehler. Bitte versuchen Sie es erneut.')
     }
@@ -99,35 +91,7 @@ export default function UnterstuetzenPage() {
 
           {/* Form */}
           <div className="lg:col-span-7">
-            {isConfirmed && submittedData ? (
-              <div>
-                <div className="border border-green-200 bg-green-50 p-8 mb-6 rounded-xl">
-                  <CheckCircle className="h-10 w-10 text-green-500 mb-3" />
-                  <h2 className="text-2xl font-black text-green-800 mb-3">E-Mail bestätigt!</h2>
-                  <p className="text-green-700 leading-relaxed mb-4">
-                    Herzlich willkommen bei der Neuen Mitte. Ihre Unterstützung ist jetzt aktiv.
-                  </p>
-                  <Link href="/programm" className="btn-primary">Programm lesen</Link>
-                </div>
-                <MemberCard firstName={submittedData.firstName} lastName={submittedData.lastName} city={submittedData.city} />
-              </div>
-            ) : isConfirmed ? (
-              <div className="border border-green-200 bg-green-50 p-8 rounded-xl">
-                <CheckCircle className="h-10 w-10 text-green-500 mb-3" />
-                <h2 className="text-2xl font-black text-green-800 mb-3">E-Mail erfolgreich bestätigt!</h2>
-                <p className="text-green-700 leading-relaxed mb-4">Herzlich willkommen bei der Neuen Mitte!</p>
-                <Link href="/programm" className="btn-primary">Programm lesen</Link>
-              </div>
-            ) : needsConfirmation ? (
-              <div className="border border-nm-blue/30 bg-nm-blue/5 p-8 rounded-xl">
-                <Mail className="h-10 w-10 text-nm-blue mb-3" />
-                <h2 className="text-2xl font-black text-nm-blue mb-3">Bitte bestätigen Sie Ihre E-Mail.</h2>
-                <p className="text-nm-muted leading-relaxed mb-4">
-                  Wir haben Ihnen eine Bestätigungs-E-Mail gesendet. Bitte klicken Sie auf den Link in der E-Mail, um Ihre Unterstützung zu aktivieren.
-                </p>
-                <p className="text-xs text-nm-muted">Kein Link erhalten? Prüfen Sie Ihren Spam-Ordner.</p>
-              </div>
-            ) : submitted && submittedData ? (
+            {submitted && submittedData ? (
               <div>
                 <div className="border border-nm-line bg-nm-gray p-8 mb-2">
                   <p className="text-[11px] font-bold tracking-[0.18em] uppercase text-nm-blue mb-2">Vielen Dank</p>
@@ -135,7 +99,10 @@ export default function UnterstuetzenPage() {
                   <p className="text-nm-muted leading-relaxed mb-6">
                     Ihre Unterstützung ist ein Signal: Deutschland braucht eine pragmatische Mitte. Wir freuen uns, Sie an unserer Seite zu haben.
                   </p>
-                  <Link href="/programm" className="btn-primary">Programm lesen</Link>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Link href="/programm" className="btn-primary">Programm lesen</Link>
+                    <Link href="/mitglieder" className="btn-outline">Als Mitglied anmelden</Link>
+                  </div>
                 </div>
                 <MemberCard
                   firstName={submittedData.firstName}
