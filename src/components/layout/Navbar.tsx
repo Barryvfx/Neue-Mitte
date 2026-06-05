@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, X, ChevronDown, Sun, Moon } from 'lucide-react'
+import { Menu, X, ChevronDown, Sun, Moon, Search } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import TopBar from './TopBar'
 import { useTheme } from '@/components/providers/ThemeProvider'
@@ -12,12 +12,19 @@ const MITMACHEN_LINKS = [
   { label: 'Bürgerfragen', href: '/buergerfragen', desc: 'Fragen stellen & abstimmen' },
   { label: 'Ideen einreichen', href: '/ideen', desc: 'Eigene Ideen vorschlagen' },
   { label: 'Debattier-Forum', href: '/debatte', desc: 'Pro & Contra diskutieren' },
+  { label: 'Bürgervoting', href: '/abstimmungen', desc: 'Zu aktuellen Fragen abstimmen' },
   { label: 'Versprechen-Tracker', href: '/versprechen', desc: 'Forderungen verfolgen' },
   { label: 'Wähler-Kompass', href: '/waehler-kompass', desc: 'Politische Position finden' },
   { label: 'Wissenstest', href: '/wissenstest', desc: 'Politisches Wissen testen' },
+  { label: 'Steuerrechner', href: '/steuerrechner', desc: 'Einkommensteuer 2024 berechnen' },
+  { label: 'Brief-Generator', href: '/brief', desc: 'Brief an den Bundestag' },
   { label: 'KI-Assistent', href: '/chatbot', desc: 'Fragen zur Politik stellen' },
   { label: 'Faktencheck', href: '/faktencheck', desc: 'Politische Aussagen prüfen' },
+  { label: 'Politisches Glossar', href: '/glossar', desc: 'A-Z der politischen Begriffe' },
+  { label: 'Zitate-Galerie', href: '/zitate', desc: 'Kluge Worte über Demokratie' },
+  { label: 'Zeitstrahl', href: '/zeitstrahl', desc: '75 Jahre Bundesrepublik' },
   { label: 'Politik erklärt', href: '/erklaert', desc: 'Themen verständlich erklärt' },
+  { label: 'Statistiken', href: '/statistiken', desc: 'Live-Zahlen der Neuen Mitte' },
   { label: 'Civic Score', href: '/civic-score', desc: 'Engagement-Punkte' },
   { label: 'Mitglieder-Panel', href: '/mitglieder', desc: 'Community & exklusive Inhalte' },
 ]
@@ -184,6 +191,13 @@ export default function Navbar() {
 
           {/* CTA */}
           <div className="hidden lg:flex items-center gap-3 flex-shrink-0">
+            <Link
+              href="/suche"
+              aria-label="Suche"
+              className="p-2 rounded-lg text-nm-muted hover:text-nm-blue hover:bg-nm-gray transition-all"
+            >
+              <Search className="h-4 w-4" />
+            </Link>
             <button
               onClick={toggle}
               aria-label="Dark Mode umschalten"

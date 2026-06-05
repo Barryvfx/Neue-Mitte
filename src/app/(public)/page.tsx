@@ -12,6 +12,7 @@ import QuoteShare from '@/components/sections/QuoteShare'
 import ProgramQuiz from '@/components/sections/ProgramQuiz'
 import CountdownTimer from '@/components/sections/CountdownTimer'
 import WahlTicker from '@/components/sections/WahlTicker'
+import TageszitatWidget from '@/components/sections/TageszitatWidget'
 
 export const dynamic = 'force-dynamic'
 
@@ -55,6 +56,7 @@ export default async function Home() {
         </div>
       </div>
 
+      <TageszitatWidget />
       <PrioritiesSection />
       <NewsPreviewSection />
       <EventsPreviewSection />
@@ -70,6 +72,35 @@ export default async function Home() {
             <ProgramQuiz />
             <PollWidget />
             <QuoteShare />
+          </div>
+        </div>
+      </section>
+
+      {/* Feature discovery grid */}
+      <section className="nm-section bg-white border-t border-nm-line">
+        <div className="nm-container">
+          <div className="mb-8">
+            <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-nm-blue mb-2">Entdecken</p>
+            <h2 className="text-2xl sm:text-3xl font-black text-nm-blue tracking-tight">Alles auf einen Blick</h2>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { emoji: '🗳️', title: 'Bürgervoting', desc: 'Stimme zu 10 aktuellen politischen Fragen ab', href: '/abstimmungen' },
+              { emoji: '📚', title: 'Politisches Glossar', desc: 'Über 35 Begriffe einfach erklärt', href: '/glossar' },
+              { emoji: '🧮', title: 'Steuerrechner', desc: 'Deine Einkommensteuer 2024 berechnen', href: '/steuerrechner' },
+              { emoji: '✉️', title: 'Brief-Generator', desc: 'Brief an den Bundestag in 60 Sekunden', href: '/brief' },
+              { emoji: '💬', title: 'Zitate-Galerie', desc: '25 inspirierende politische Zitate', href: '/zitate' },
+              { emoji: '📅', title: 'Zeitstrahl', desc: '75 Jahre Bundesrepublik Deutschland', href: '/zeitstrahl' },
+              { emoji: '📊', title: 'Statistiken', desc: 'Live-Zahlen der Neuen Mitte', href: '/statistiken' },
+              { emoji: '👥', title: 'Mitglieder-Panel', desc: 'Community beitreten & chatten', href: '/mitglieder' },
+            ].map(f => (
+              <Link key={f.href} href={f.href}
+                className="border border-nm-line rounded-xl p-4 hover:border-nm-blue/40 hover:bg-nm-blue/5 transition-all group">
+                <div className="text-2xl mb-3">{f.emoji}</div>
+                <h3 className="font-black text-nm-text text-sm mb-1 group-hover:text-nm-blue transition-colors">{f.title}</h3>
+                <p className="text-xs text-nm-muted leading-relaxed">{f.desc}</p>
+              </Link>
+            ))}
           </div>
         </div>
       </section>

@@ -111,15 +111,17 @@ export default function Footer() {
               </ul>
             </div>
             <div>
-              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/40 mb-4">Mitmachen</p>
+              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/40 mb-4">Mitmachen & Tools</p>
               <ul className="space-y-2.5">
                 {[
                   { label: 'Bürgerfragen', href: '/buergerfragen' },
                   { label: 'Ideen', href: '/ideen' },
-                  { label: 'Debatte', href: '/debatte' },
-                  { label: 'Wähler-Kompass', href: '/waehler-kompass' },
-                  { label: 'Wissenstest', href: '/wissenstest' },
-                  { label: 'Faktencheck', href: '/faktencheck' },
+                  { label: 'Bürgervoting', href: '/abstimmungen' },
+                  { label: 'Steuerrechner', href: '/steuerrechner' },
+                  { label: 'Brief-Generator', href: '/brief' },
+                  { label: 'Glossar', href: '/glossar' },
+                  { label: 'Zeitstrahl', href: '/zeitstrahl' },
+                  { label: 'Statistiken', href: '/statistiken' },
                   { label: 'Mitglieder', href: '/mitglieder' },
                 ].map((l) => (
                   <li key={l.href}>

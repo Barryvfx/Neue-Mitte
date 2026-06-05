@@ -1,6 +1,7 @@
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import MaintenancePage from '@/components/sections/MaintenancePage'
+import BackToTop from '@/components/ui/BackToTop'
 import { prisma } from '@/lib/db'
 
 export const dynamic = 'force-dynamic'
@@ -30,6 +31,7 @@ export default async function PublicLayout({ children }: { children: React.React
       <Navbar />
       <main>{children}</main>
       <Footer />
+      <BackToTop />
     </>
   )
 }

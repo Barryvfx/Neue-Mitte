@@ -5,7 +5,7 @@
 import { prisma } from '@/lib/db'
 import {
   WISSENSTEST_POOL, FAKTENCHECK_POOL, VERSPRECHEN_POOL, BILDUNG_POOL,
-  GESETZ_POOL, TRANSPARENZ_POOL, DEBATTE_POOL,
+  GESETZ_POOL, TRANSPARENZ_POOL, DEBATTE_POOL, GLOSSAR_POOL, ZITAT_POOL, ABSTIMMUNG_POOL,
 } from '@/lib/seed-content'
 
 const locks: Record<string, Promise<void> | undefined> = {}
@@ -89,6 +89,36 @@ export function seedDebatte() {
           argumente: { create: d.args.map(a => ({ text: a.text, seite: a.seite })) },
         },
       })
+    }
+  })
+}
+
+export function seedGlossar() {
+  return once('glossar', async () => {
+    const count = await prisma.glossarEintrag.count()
+    if (count > 0) return
+    for (const g of GLOSSAR_POOL) {
+      await prisma.glossarEintrag.create({ data: g })
+    }
+  })
+}
+
+export function seedZitate() {
+  return once('zitate', async () => {
+    const count = await prisma.zitat.count()
+    if (count > 0) return
+    for (const z of ZITAT_POOL) {
+      await prisma.zitat.create({ data: z })
+    }
+  })
+}
+
+export function seedAbstimmungen() {
+  return once('abstimmungen', async () => {
+    const count = await prisma.abstimmung.count()
+    if (count > 0) return
+    for (const a of ABSTIMMUNG_POOL) {
+      await prisma.abstimmung.create({ data: a })
     }
   })
 }

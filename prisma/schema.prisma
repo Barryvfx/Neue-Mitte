@@ -472,3 +472,66 @@ model MitgliedMessage {
   @@index([createdAt])
   @@map("mitglied_messages")
 }
+
+model Lesezeichen {
+  id         String   @id @default(cuid())
+  mitgliedId String
+  targetType String
+  targetId   String
+  title      String
+  url        String
+  createdAt  DateTime @default(now())
+
+  @@unique([mitgliedId, targetType, targetId])
+  @@index([mitgliedId])
+  @@map("lesezeichen")
+}
+
+model GlossarEintrag {
+  id         String   @id @default(cuid())
+  term       String   @unique
+  definition String
+  category   String   @default("Allgemein")
+  letter     String   @default("A")
+  published  Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  @@index([letter])
+  @@map("glossar_eintraege")
+}
+
+model Zitat {
+  id        String   @id @default(cuid())
+  text      String
+  author    String
+  year      Int?
+  context   String?
+  category  String   @default("Demokratie")
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@map("zitate")
+}
+
+model Abstimmung {
+  id        String           @id @default(cuid())
+  question  String
+  context   String
+  category  String           @default("Allgemein")
+  active    Boolean          @default(true)
+  createdAt DateTime         @default(now())
+  votes     AbstimmungVote[]
+
+  @@map("abstimmungen")
+}
+
+model AbstimmungVote {
+  id           String     @id @default(cuid())
+  abstimmungId String
+  position     String
+  createdAt    DateTime   @default(now())
+  abstimmung   Abstimmung @relation(fields: [abstimmungId], references: [id], onDelete: Cascade)
+
+  @@index([abstimmungId])
+  @@map("abstimmung_votes")
+}
