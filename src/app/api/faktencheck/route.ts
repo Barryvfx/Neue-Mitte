@@ -11,7 +11,10 @@ export async function GET(req: NextRequest) {
         where: { id: slug },
       })
       if (!item || !item.published) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-      return NextResponse.json(item)
+      return NextResponse.json({
+        ...item,
+        sources: item.sources ? item.sources.split('\n').filter(Boolean) : [],
+      })
     }
     const items = await prisma.faktencheck.findMany({
       where: { published: true },
