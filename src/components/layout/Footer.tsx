@@ -117,11 +117,10 @@ export default function Footer() {
                   { label: 'Bürgerfragen', href: '/buergerfragen' },
                   { label: 'Ideen', href: '/ideen' },
                   { label: 'Debatte', href: '/debatte' },
-                  { label: 'Ehrenamt', href: '/ehrenamt' },
-                  { label: 'Wahlhelfer', href: '/wahlhelfer' },
+                  { label: 'Wähler-Kompass', href: '/waehler-kompass' },
                   { label: 'Wissenstest', href: '/wissenstest' },
-                  { label: 'Impressum', href: '/impressum' },
-                  { label: 'Datenschutz', href: '/datenschutz' },
+                  { label: 'Faktencheck', href: '/faktencheck' },
+                  { label: 'Mitglieder', href: '/mitglieder' },
                 ].map((l) => (
                   <li key={l.href}>
                     <Link href={l.href} className="text-[13px] text-white/60 hover:text-white transition-colors">
@@ -138,13 +137,15 @@ export default function Footer() {
 
       {/* Bottom */}
       <div className="border-t border-white/10">
-        <div className="nm-container py-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+        <div className="nm-container py-4 flex flex-col sm:flex-row justify-between items-center gap-3">
           <p className="text-[11px] text-white/30">
             &copy; {year} Neue Mitte. Alle Rechte vorbehalten.
           </p>
-          <p className="text-[11px] text-white/30">
-            Deutschland kann mehr.
-          </p>
+          <div className="flex items-center gap-4">
+            <Link href="/impressum" className="text-[11px] text-white/40 hover:text-white transition-colors">Impressum</Link>
+            <Link href="/datenschutz" className="text-[11px] text-white/40 hover:text-white transition-colors">Datenschutz</Link>
+            <p className="text-[11px] text-white/30">Deutschland kann mehr.</p>
+          </div>
         </div>
       </div>
     </footer>

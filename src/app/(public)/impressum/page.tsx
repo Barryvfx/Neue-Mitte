@@ -26,7 +26,7 @@ export default function Impressum() {
         <div className="prose dark:prose-invert max-w-none space-y-8">
           <section>
             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-              Angaben gemäß § 5 TMG
+              Angaben gemäß § 5 DDG
             </h2>
             <div className="card-base p-6">
               <p className="font-semibold text-gray-900 dark:text-white text-lg mb-1">Nico Waitkus</p>
@@ -70,7 +70,7 @@ export default function Impressum() {
 
           <section>
             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-              Verantwortlich für den Inhalt (§ 55 Abs. 2 RStV)
+              Verantwortlich für den Inhalt (§ 18 Abs. 2 MStV)
             </h2>
             <div className="card-base p-6">
               <p className="text-gray-700 dark:text-gray-300">Nico Waitkus</p>
@@ -88,7 +88,7 @@ export default function Impressum() {
                 <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
                   Die Inhalte dieser Webseite wurden mit größtmöglicher Sorgfalt erstellt. Für die
                   Richtigkeit, Vollständigkeit und Aktualität der Inhalte kann jedoch keine Gewähr
-                  übernommen werden. Als Diensteanbieter sind wir gemäß § 7 Abs. 1 TMG für eigene
+                  übernommen werden. Als Diensteanbieter sind wir gemäß § 7 Abs. 1 DDG für eigene
                   Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich.
                 </p>
               </div>
